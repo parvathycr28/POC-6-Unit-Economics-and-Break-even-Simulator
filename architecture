@@ -1,0 +1,128 @@
+Project Architecture: Unit Economics & Break-even Simulator
+                 ┌─────────────────────────────┐
+                 │        User Interface        │
+                 │   Unit Economics Simulator   │
+                 └──────────────┬──────────────┘
+                                │
+                                ▼
+                 ┌─────────────────────────────┐
+                 │       Next.js App Layer      │
+                 │        app/page.tsx          │
+                 │      layout / globals.css    │
+                 └──────────────┬──────────────┘
+                                │
+                                ▼
+                 ┌─────────────────────────────┐
+                 │      SimulatorShell.tsx      │
+                 │  Main dashboard controller   │
+                 └──────────────┬──────────────┘
+                                │
+             ┌──────────────────┼──────────────────┐
+             ▼                  ▼                  ▼
+      ┌────────────┐    ┌──────────────┐   ┌──────────────┐
+      │ Scenario   │    │ Metric Cards │   │ Intelligence │
+      │ Controls   │    │ / Dashboard  │   │    Panels    │
+      └─────┬──────┘    └──────────────┘   └──────────────┘
+            │
+            ▼
+      ┌─────────────────────────────────────────────┐
+      │              Visualization Layer            │
+      ├─────────────────┬───────────────┬───────────┤
+      │ Contribution    │ Break-even    │ CAC/LTV   │
+      │ Waterfall       │ Chart         │ Scatter    │
+      │                 │               │           │
+      │ Contribution    │ Sensitivity   │ Driver    │
+      │ Waterfall.tsx   │ BreakEven...  │ Tornado   │
+      └─────────────────┴───────────────┴───────────┘
+                                │
+                                ▼
+                 ┌─────────────────────────────┐
+                 │       Business Logic         │
+                 │       calculations.ts        │
+                 │                              │
+                 │ Revenue                      │
+                 │ Variable Cost                │
+                 │ Contribution                 │
+                 │ Fixed Cost                   │
+                 │ Operating Profit             │
+                 │ Break-even                   │
+                 │ CAC / LTV                    │
+                 │ Sensitivity                  │
+                 └──────────────┬──────────────┘
+                                │
+                    ┌───────────┴───────────┐
+                    ▼                       ▼
+             ┌─────────────┐        ┌─────────────┐
+             │  mockData   │        │    types    │
+             │  .ts        │        │    .ts      │
+             │ Sample data │        │ TypeScript  │
+             │ / scenarios │        │ interfaces  │
+             └─────────────┘        └─────────────┘
+    
+    Main folder structure
+unit-economics-simulator/
+│
+├── frontend/
+│   │
+│   ├── app/
+│   │   ├── page.tsx
+│   │   ├── layout.tsx
+│   │   ├── globals.css
+│   │   │
+│   │   ├── components/
+│   │   │   ├── SimulatorShell.tsx
+│   │   │   ├── ScenarioControls.tsx
+│   │   │   ├── MetricCards.tsx
+│   │   │   ├── ContributionWaterfall.tsx
+│   │   │   ├── BreakEvenChart.tsx
+│   │   │   ├── CacLtvScatter.tsx
+│   │   │   ├── SensitivityTornado.tsx
+│   │   │   ├── IntelligencePanel.tsx
+│   │   │   ├── MacroIntelligencePanel.tsx
+│   │   │   ├── FredChart.tsx
+│   │   │   ├── FredMetricCards.tsx
+│   │   │   └── Header.tsx
+│   │   │
+│   │   └── ...
+│   │
+│   ├── lib/
+│   │   ├── calculations.ts
+│   │   ├── mockData.ts
+│   │   └── types.ts
+│   │
+│   ├── package.json
+│   └── ...
+│
+└── README.md
+How the data flows
+User changes:
+Price
+Variable Cost
+Fixed Cost
+Volume
+CAC
+Retention
+        │
+        ▼
+ScenarioControls.tsx
+        │
+        ▼
+calculations.ts
+        │
+        ▼
+SimulationResult
+        │
+        ├──► MetricCards
+        │
+        ├──► ContributionWaterfall
+        │
+        ├──► BreakEvenChart
+        │
+        ├──► CacLtvScatter
+        │
+        ├──► SensitivityTornado
+        │
+        └──► IntelligencePanel
+Architecture in one sentence
+
+The project uses a component-based Next.js architecture where user inputs are managed through React components, business calculations are isolated in calculations.ts, data types are defined in types.ts, and the resulting simulation data is passed to reusable dashboard visualizations and intelligence panels.
