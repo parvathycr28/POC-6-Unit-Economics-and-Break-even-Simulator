@@ -1,0 +1,5 @@
+cost_id,cost_category,cost_name,monthly_amount,type
+FC001,People,Engineering,2200000,fixed
+FC002,People,Sales,900000,fixed
+FC003,Infrastructure,Cloud,480000,variable
+FC004,Operations,Support,1100000,fixed

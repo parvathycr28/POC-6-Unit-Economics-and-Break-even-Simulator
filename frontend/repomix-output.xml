@@ -1,0 +1,5848 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+app/
+  components/
+    BreakEvenChart.tsx
+    CacLtvScatter.tsx
+    ContributionWaterfall.tsx
+    DeveloperSignature.tsx
+    FredChart.tsx
+    FredMetricCards.tsx
+    Header.tsx
+    IntelligencePanel.tsx
+    MacroIntelligencepanel.tsx
+    MetricCards.tsx
+    ScenarioControls.tsx
+    SensitivityTornado.tsx
+    SimulatorShell.tsx
+  globals.css
+  layout.tsx
+  page.tsx
+lib/
+  calculations.ts
+  mockData.ts
+  types.ts
+global.d.ts
+next-env.d.ts
+package.json
+tailwind.config.ts
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="app/components/BreakEvenChart.tsx">
+"use client";
+
+import dynamic from "next/dynamic";
+
+import { SimulationResult } from "@/lib/types";
+
+const ReactECharts =
+  dynamic(
+    () =>
+      import(
+        "echarts-for-react"
+      ),
+    {
+      ssr: false
+    }
+  );
+
+export default function BreakEvenChart({
+  simulation,
+  units,
+  onClick
+}: {
+  simulation: SimulationResult;
+  units: number;
+  onClick: () => void;
+}) {
+  const maxUnits =
+    Math.max(
+      units * 1.8,
+      simulation.breakEvenUnits
+        ? simulation.breakEvenUnits *
+            1.4
+        : units * 1.8
+    );
+
+  const points =
+    Array.from(
+      {
+        length: 12
+      },
+      (_, index) =>
+        Math.round(
+          (maxUnits / 11) *
+            index
+        )
+    );
+
+  const option = {
+    backgroundColor: "transparent",
+
+    grid: {
+      left: 48,
+      right: 18,
+      top: 20,
+      bottom: 35
+    },
+
+    tooltip: {
+      trigger: "axis"
+    },
+
+    xAxis: {
+      type: "value",
+
+      axisLabel: {
+        color: "#6f6b7e",
+        fontSize: 9
+      },
+
+      axisLine: {
+        lineStyle: {
+          color: "rgba(255,255,255,.06)"
+        }
+      },
+
+      splitLine: {
+        show: false
+      }
+    },
+
+    yAxis: {
+      type: "value",
+
+      axisLabel: {
+        color: "#6f6b7e",
+        fontSize: 9
+      },
+
+      splitLine: {
+        lineStyle: {
+          color: "rgba(255,255,255,.05)"
+        }
+      }
+    },
+
+    series: [
+      {
+        name: "Contribution",
+
+        type: "line",
+
+        smooth: true,
+
+        symbol: "none",
+
+        data: points.map(
+          (volume) => [
+            volume,
+            volume *
+              simulation.contributionPerUnit
+          ]
+        ),
+
+        lineStyle: {
+          color: "#38BDF8",
+          width: 2
+        }
+      },
+
+      {
+        name: "Fixed cost",
+
+        type: "line",
+
+        symbol: "none",
+
+        data: points.map(
+          (volume) => [
+            volume,
+            simulation.fixedCost
+          ]
+        ),
+
+        lineStyle: {
+          color: "#FBBF24",
+          width: 1,
+          type: "dashed"
+        }
+      },
+
+      ...(simulation.breakEvenUnits
+        ? [
+            {
+              name: "Break-even",
+
+              type: "scatter",
+
+              data: [
+                [
+                  simulation.breakEvenUnits,
+                  simulation.fixedCost
+                ]
+              ],
+
+              symbolSize: 10,
+
+              itemStyle: {
+                color: "#34D399"
+              }
+            }
+          ]
+        : [])
+    ]
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="
+        group
+        flex
+        min-h-[300px]
+        flex-col
+        rounded-2xl
+        border
+        border-white/8
+        bg-black/15
+        p-4
+        text-left
+        transition
+        hover:border-violet/30
+        hover:bg-white/[0.025]
+      "
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-[9px] tracking-[0.2em] text-violet/80">
+            02 · ABSORPTION
+          </div>
+
+          <div className="mt-1 text-sm font-semibold">
+            Break-even curve
+          </div>
+        </div>
+
+        <div className="text-[8px] uppercase tracking-wider text-slate-700 transition group-hover:text-violet/70">
+          Intelligence
+        </div>
+      </div>
+
+      <div className="min-h-0 flex-1">
+        <ReactECharts
+          option={option}
+          style={{
+            width: "100%",
+            height: "100%",
+            minHeight: 230
+          }}
+        />
+      </div>
+    </button>
+  );
+}
+</file>
+
+<file path="app/components/CacLtvScatter.tsx">
+"use client";
+
+import dynamic from "next/dynamic";
+
+import {
+  Customer,
+  SimulationResult
+} from "@/lib/types";
+
+const ReactECharts =
+  dynamic(
+    () =>
+      import(
+        "echarts-for-react"
+      ),
+    {
+      ssr: false
+    }
+  );
+
+const syntheticCustomers: Customer[] = [
+  {
+    customer_id: "C001",
+    segment: "SMB",
+    acquisition_channel:
+      "Paid Search",
+    cac: 780,
+    monthly_revenue: 2500,
+    retention_months: 18
+  },
+
+  {
+    customer_id: "C002",
+    segment: "SMB",
+    acquisition_channel:
+      "Partner",
+    cac: 520,
+    monthly_revenue: 2500,
+    retention_months: 27
+  },
+
+  {
+    customer_id: "C003",
+    segment: "Mid-Market",
+    acquisition_channel:
+      "Outbound",
+    cac: 1850,
+    monthly_revenue: 7500,
+    retention_months: 31
+  },
+
+  {
+    customer_id: "C004",
+    segment: "Enterprise",
+    acquisition_channel:
+      "Enterprise Partner",
+    cac: 6200,
+    monthly_revenue: 25000,
+    retention_months: 42
+  }
+];
+
+export default function CacLtvScatter({
+  simulation,
+  onClick
+}: {
+  simulation: SimulationResult;
+  onClick: () => void;
+}) {
+  const points =
+    syntheticCustomers.map(
+      (customer) => {
+        const grossMargin =
+          simulation.contributionMarginPercent /
+          100;
+
+        const ltv =
+          customer.monthly_revenue *
+          grossMargin *
+          customer.retention_months;
+
+        return {
+          name:
+            customer.acquisition_channel,
+
+          value: [
+            customer.cac,
+            ltv
+          ]
+        };
+      }
+    );
+
+  const option = {
+    backgroundColor: "transparent",
+
+    grid: {
+      left: 50,
+      right: 18,
+      top: 20,
+      bottom: 38
+    },
+
+    tooltip: {
+      trigger: "item",
+
+      formatter: (params: any) => {
+        const value =
+          params.value;
+
+        return `
+          <strong>${params.name}</strong>
+          <br/>
+          CAC: ₹${Number(
+            value[0]
+          ).toLocaleString("en-IN")}
+          <br/>
+          LTV: ₹${Number(
+            value[1]
+          ).toLocaleString("en-IN")}
+        `;
+      }
+    },
+
+    xAxis: {
+      type: "value",
+
+      name: "CAC",
+
+      nameTextStyle: {
+        color: "#77738a",
+        fontSize: 9
+      },
+
+      axisLabel: {
+        color: "#77738a",
+        fontSize: 9
+      },
+
+      splitLine: {
+        lineStyle: {
+          color: "rgba(255,255,255,.05)"
+        }
+      }
+    },
+
+    yAxis: {
+      type: "value",
+
+      name: "LTV",
+
+      nameTextStyle: {
+        color: "#77738a",
+        fontSize: 9
+      },
+
+      axisLabel: {
+        color: "#77738a",
+        fontSize: 9
+      },
+
+      splitLine: {
+        lineStyle: {
+          color: "rgba(255,255,255,.05)"
+        }
+      }
+    },
+
+    series: [
+      {
+        type: "scatter",
+
+        data: points,
+
+        symbolSize: (
+          value: number[]
+        ) =>
+          Math.max(
+            10,
+            Math.min(
+              26,
+              value[1] / 2500
+            )
+          ),
+
+        itemStyle: {
+          color: "#818CF8",
+          opacity: 0.85
+        }
+      }
+    ]
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="
+        group
+        flex
+        min-h-[300px]
+        flex-col
+        rounded-2xl
+        border
+        border-white/8
+        bg-black/15
+        p-4
+        text-left
+        transition
+        hover:border-violet/30
+        hover:bg-white/[0.025]
+      "
+    >
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-[9px] tracking-[0.2em] text-violet/80">
+            03 · CUSTOMER ECONOMICS
+          </div>
+
+          <div className="mt-1 text-sm font-semibold">
+            CAC / LTV scatter
+          </div>
+        </div>
+
+        <div className="text-[8px] uppercase tracking-wider text-slate-700 transition group-hover:text-violet/70">
+          Intelligence
+        </div>
+      </div>
+
+      <div className="min-h-0 flex-1">
+        <ReactECharts
+          option={option}
+          style={{
+            width: "100%",
+            height: "100%",
+            minHeight: 230
+          }}
+        />
+      </div>
+    </button>
+  );
+}
+</file>
+
+<file path="app/components/ContributionWaterfall.tsx">
+"use client";
+
+import { SimulationResult } from "@/lib/types";
+
+function money(value: number): string {
+  return new Intl.NumberFormat("en-IN", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+export default function ContributionWaterfall({
+  simulation,
+  onClick,
+}: {
+  simulation: SimulationResult;
+  onClick: () => void;
+}) {
+  const rows = [
+    {
+      number: "01",
+      label: "Revenue",
+      value: simulation.revenue,
+      positive: true,
+    },
+    {
+      number: "02",
+      label: "Variable cost",
+      value: simulation.variableCostTotal,
+      positive: false,
+    },
+    {
+      number: "03",
+      label: "Contribution",
+      value: simulation.contribution,
+      positive: simulation.contribution >= 0,
+    },
+    {
+      number: "04",
+      label: "Fixed cost",
+      value: simulation.fixedCost,
+      positive: false,
+    },
+    {
+      number: "05",
+      label: "Operating profit",
+      value: Math.abs(simulation.operatingProfit),
+      positive: simulation.operatingProfit >= 0,
+    },
+  ];
+
+  const maxValue = Math.max(
+    ...rows.map((row) => Math.abs(row.value)),
+    1
+  );
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="
+        group
+        relative
+        flex
+        min-h-[350px]
+        w-full
+        flex-col
+        overflow-hidden
+        rounded-xl
+        border
+        border-[#1F2937]
+        bg-[#0B1117]
+        p-5
+        text-left
+        transition-all
+        duration-300
+        hover:border-[#38BDF8]/50
+      "
+    >
+      {/* TOP ACCENT */}
+      <div
+        className="
+          absolute
+          left-0
+          right-0
+          top-0
+          h-px
+          bg-[#38BDF8]/50
+        "
+      />
+
+      {/* HEADER */}
+      <div className="flex items-start justify-between">
+        <div>
+          <div
+            className="
+              text-[11px]
+              font-medium
+              uppercase
+              tracking-[0.18em]
+              text-[#38BDF8]
+            "
+          >
+            01 · MARGIN
+          </div>
+
+          <div
+            className="
+              mt-1
+              text-[17px]
+              font-semibold
+              text-white
+            "
+          >
+            Contribution waterfall
+          </div>
+        </div>
+
+        <div
+          className="
+            rounded-md
+            border
+            border-[#1F2937]
+            bg-[#030712]
+            px-2
+            py-1
+            text-[9px]
+            uppercase
+            tracking-[0.15em]
+            text-slate-500
+            group-hover:text-[#38BDF8]
+          "
+        >
+          Intelligence
+        </div>
+      </div>
+
+      {/* DIVIDER */}
+      <div className="my-4 h-px bg-[#1F2937]" />
+
+      {/* ECONOMICS */}
+      <div className="flex flex-1 flex-col justify-between">
+        {rows.map((row) => {
+          const percentage = Math.max(
+            8,
+            (Math.abs(row.value) / maxValue) * 100
+          );
+
+          return (
+            <div
+              key={row.label}
+              className="
+                border-b
+                border-[#1F2937]/70
+                py-2.5
+                last:border-b-0
+              "
+            >
+              {/* HORIZONTAL ROW */}
+              <div
+                className="
+                  flex
+                  w-full
+                  items-center
+                  justify-between
+                  gap-4
+                "
+              >
+                {/* LEFT */}
+                <div className="flex min-w-0 items-center gap-3">
+                  <span
+                    className="
+                      flex
+                      h-7
+                      w-7
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-md
+                      border
+                      border-[#1F2937]
+                      bg-[#030712]
+                      text-[9px]
+                      font-semibold
+                      text-[#38BDF8]
+                    "
+                  >
+                    {row.number}
+                  </span>
+
+                  <span
+                    className="
+                      whitespace-nowrap
+                      text-[13px]
+                      font-medium
+                      text-slate-300
+                    "
+                  >
+                    {row.label}
+                  </span>
+                </div>
+
+                {/* RIGHT VALUE */}
+                <span
+                  className={`
+                    shrink-0
+                    whitespace-nowrap
+                    text-right
+                    text-[15px]
+                    font-semibold
+                    tracking-tight
+                    ${
+                      row.positive
+                        ? "text-[#38BDF8]"
+                        : "text-slate-300"
+                    }
+                  `}
+                >
+                  {!row.positive && "−"}₹{money(row.value)}
+                </span>
+              </div>
+
+              {/* BAR */}
+              <div
+                className="
+                  ml-10
+                  mt-2
+                  h-1
+                  overflow-hidden
+                  rounded-full
+                  bg-[#030712]
+                "
+              >
+                <div
+                  className={`
+                    h-full
+                    rounded-full
+                    ${
+                      row.positive
+                        ? "bg-[#38BDF8]"
+                        : "bg-slate-600"
+                    }
+                  `}
+                  style={{
+                    width: `${percentage}%`,
+                    opacity: row.positive ? 0.75 : 0.45,
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* FOOTER */}
+      <div
+        className="
+          mt-3
+          flex
+          items-center
+          justify-between
+          border-t
+          border-[#1F2937]
+          pt-3
+        "
+      >
+        <span
+          className="
+            text-[9px]
+            uppercase
+            tracking-[0.15em]
+            text-slate-600
+          "
+        >
+          Monthly economics
+        </span>
+
+        <span
+          className="
+            text-[9px]
+            uppercase
+            tracking-[0.15em]
+            text-[#38BDF8]/70
+          "
+        >
+          Live scenario
+        </span>
+      </div>
+    </button>
+  );
+}
+</file>
+
+<file path="app/components/DeveloperSignature.tsx">
+export default function DeveloperSignature() {
+  return (
+    <div
+      className="
+        pointer-events-none
+        absolute
+        bottom-5
+        right-6
+        z-30
+        hidden
+        text-right
+        md:block
+      "
+    >
+      <div className="text-[8px] uppercase tracking-[0.18em] text-slate-700">
+        Developed by: Parvathy CR
+      </div>
+
+      <div className="mt-1 text-[8px] uppercase tracking-[0.18em] text-slate-700">
+        PoC ID: 6
+      </div>
+
+      <div className="mt-1 text-[8px] uppercase tracking-[0.18em] text-slate-700">
+        GitHub: @parvathycr28
+      </div>
+
+      <div className="mt-1 text-[8px] uppercase tracking-[0.18em] text-violet/50">
+        Infocreon Internship
+      </div>
+    </div>
+  );
+}
+</file>
+
+<file path="app/components/FredChart.tsx">
+"use client";
+
+import dynamic from "next/dynamic";
+import { FredObservation } from "@/lib/types";
+
+const ReactECharts = dynamic(
+  () => import("echarts-for-react"),
+  { ssr: false }
+);
+
+type Props = {
+  title: string;
+  subtitle: string;
+  observations: FredObservation[];
+  unit: string;
+};
+
+export default function FredChart({
+  title,
+  subtitle,
+  observations,
+  unit,
+}: Props) {
+  const option = {
+    backgroundColor: "transparent",
+
+    grid: {
+      left: 48,
+      right: 20,
+      top: 35,
+      bottom: 35,
+    },
+
+    tooltip: {
+      trigger: "axis",
+      backgroundColor: "#0B1117",
+      borderColor: "#1F2937",
+      textStyle: {
+        color: "#E5E7EB",
+        fontSize: 11,
+      },
+      formatter: (params: any) => {
+        const point = params?.[0];
+
+        if (!point) return "";
+
+        return `
+          <div style="font-weight:600">
+            ${point.axisValue}
+          </div>
+          <div style="margin-top:4px">
+            ${Number(point.value).toFixed(2)} ${unit}
+          </div>
+        `;
+      },
+    },
+
+    xAxis: {
+      type: "category",
+      data: observations.map((item) => item.date),
+      boundaryGap: false,
+
+      axisLabel: {
+        color: "#64748B",
+        fontSize: 9,
+      },
+
+      axisLine: {
+        lineStyle: {
+          color: "#1F2937",
+        },
+      },
+
+      axisTick: {
+        show: false,
+      },
+    },
+
+    yAxis: {
+      type: "value",
+
+      axisLabel: {
+        color: "#64748B",
+        fontSize: 9,
+      },
+
+      splitLine: {
+        lineStyle: {
+          color: "rgba(31,41,55,.55)",
+        },
+      },
+    },
+
+    series: [
+      {
+        name: title,
+        type: "line",
+        smooth: true,
+        symbol: "none",
+
+        data: observations.map(
+          (item) => item.value
+        ),
+
+        lineStyle: {
+          color: "#38BDF8",
+          width: 2,
+        },
+
+        areaStyle: {
+          color: "rgba(56,189,248,.10)",
+        },
+      },
+    ],
+  };
+
+  return (
+    <section className="terminal-card min-h-[330px]">
+      <div className="mb-3 flex items-start justify-between">
+        <div>
+          <div className="terminal-kicker">
+            FRED · MACRO SERIES
+          </div>
+
+          <h2 className="mt-1 text-sm font-semibold text-white">
+            {title}
+          </h2>
+
+          <p className="mt-1 text-[10px] text-slate-500">
+            {subtitle}
+          </p>
+        </div>
+
+        <span className="status-dot">
+          LIVE
+        </span>
+      </div>
+
+      <div className="h-[270px]">
+        <ReactECharts
+          option={option}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        />
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="app/components/FredMetricCards.tsx">
+"use client";
+
+import { FredSeries } from "@/lib/types";
+
+function formatValue(
+  series: FredSeries
+) {
+  if (series.latest === null) {
+    return "—";
+  }
+
+  if (series.id === "CPIAUCSL") {
+    return series.latest.toFixed(1);
+  }
+
+  return `${series.latest.toFixed(2)}%`;
+}
+
+function Metric({
+  label,
+  value,
+  description,
+}: {
+  label: string;
+  value: string;
+  description: string;
+}) {
+  return (
+    <div className="terminal-card p-4">
+      <div className="terminal-kicker">
+        {label}
+      </div>
+
+      <div className="mt-2 text-2xl font-semibold tracking-tight text-white">
+        {value}
+      </div>
+
+      <div className="mt-1 text-[10px] text-slate-500">
+        {description}
+      </div>
+    </div>
+  );
+}
+
+export default function FredMetricCards({
+  treasury10y,
+  fedFunds,
+  cpi,
+  unemployment,
+  realGdp,
+}: {
+  treasury10y: FredSeries;
+  fedFunds: FredSeries;
+  cpi: FredSeries;
+  unemployment: FredSeries;
+  realGdp: FredSeries;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <Metric
+        label="10Y TREASURY"
+        value={formatValue(treasury10y)}
+        description="DGS10 · FRED"
+      />
+
+      <Metric
+        label="FED FUNDS"
+        value={formatValue(fedFunds)}
+        description="DFF · FRED"
+      />
+
+      <Metric
+        label="CPI INDEX"
+        value={formatValue(cpi)}
+        description="CPIAUCSL · FRED"
+      />
+
+      <Metric
+        label="UNEMPLOYMENT"
+        value={formatValue(unemployment)}
+        description="UNRATE · FRED"
+      />
+
+      <Metric
+        label="REAL GDP"
+        value={formatValue(realGdp)}
+        description="GDPC1 · FRED"
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="app/components/Header.tsx">
+"use client";
+
+import { Info } from "lucide-react";
+
+type HeaderProps = {
+  onInfo: () => void;
+};
+
+export default function Header({
+  onInfo,
+}: HeaderProps) {
+  return (
+    <header
+      className="
+        pointer-events-none
+        absolute
+        left-0
+        right-0
+        top-0
+        z-50
+        flex
+        items-start
+        justify-between
+        px-5
+        py-5
+        md:px-8
+        md:py-7
+      "
+    >
+      <div>
+        <div className="text-[9px] font-semibold tracking-[0.35em] text-violet">
+          INFOCREON INTERNSHIP
+        </div>
+
+        <h1 className="mt-2 text-xs font-medium tracking-[0.18em] text-white md:text-sm">
+          UNIT ECONOMICS &amp; BREAK-EVEN SIMULATOR
+        </h1>
+
+        <div className="mt-1 text-[8px] tracking-[0.28em] text-slate-600">
+          FINANCE &amp; CASH · SCENARIO INTELLIGENCE
+        </div>
+      </div>
+
+      <button
+        type="button"
+        aria-label="Open project information"
+        onClick={onInfo}
+        className="
+          pointer-events-auto
+          rounded-full
+          border
+          border-white/10
+          bg-black/20
+          p-2.5
+          text-slate-400
+          backdrop-blur-md
+          transition
+          hover:border-violet/40
+          hover:bg-violet/10
+          hover:text-white
+        "
+      >
+        <Info size={16} strokeWidth={1.8} />
+      </button>
+    </header>
+  );
+}
+</file>
+
+<file path="app/components/IntelligencePanel.tsx">
+"use client";
+
+import { useEffect } from "react";
+import { X } from "lucide-react";
+
+import {
+  IntelligenceType,
+  Scenario,
+  SimulationResult,
+} from "@/lib/types";
+
+type Props = {
+  intelligence: IntelligenceType;
+  simulation: SimulationResult;
+  scenario: Scenario;
+  onClose: () => void;
+};
+
+export default function IntelligencePanel({
+  intelligence,
+  simulation,
+  scenario,
+  onClose,
+}: Props) {
+  useEffect(() => {
+    if (!intelligence) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener(
+        "keydown",
+        handleEscape
+      );
+    };
+  }, [intelligence, onClose]);
+
+  if (!intelligence) {
+    return null;
+  }
+
+  const content = {
+    waterfall: {
+      kicker: "MARGIN ENGINE",
+      title: "Contribution waterfall",
+
+      description:
+        simulation.operatingProfit >= 0
+          ? "The current scenario generates enough contribution to absorb the fixed-cost base and produce operating profit."
+          : "The current contribution pool does not fully absorb the fixed-cost base.",
+
+      stats: [
+        [
+          "Contribution / unit",
+          `₹${simulation.contributionPerUnit.toLocaleString(
+            "en-IN"
+          )}`,
+        ],
+        [
+          "Contribution margin",
+          `${simulation.contributionMarginPercent.toFixed(
+            1
+          )}%`,
+        ],
+        [
+          "Operating profit",
+          `₹${Math.round(
+            simulation.operatingProfit
+          ).toLocaleString("en-IN")}`,
+        ],
+      ],
+    },
+
+    breakEven: {
+      kicker: "VOLUME ABSORPTION",
+      title: "Break-even intelligence",
+
+      description:
+        simulation.breakEvenUnits !== null
+          ? `The scenario requires approximately ${Math.ceil(
+              simulation.breakEvenUnits
+            ).toLocaleString(
+              "en-IN"
+            )} units per month before contribution fully absorbs fixed costs.`
+          : "Break-even is unavailable because contribution per unit is not positive.",
+
+      stats: [
+        [
+          "Current volume",
+          scenario.units.toLocaleString("en-IN"),
+        ],
+        [
+          "Break-even units",
+          simulation.breakEvenUnits !== null
+            ? Math.ceil(
+                simulation.breakEvenUnits
+              ).toLocaleString("en-IN")
+            : "N/A",
+        ],
+        [
+          "Safety margin",
+          simulation.safetyMarginPercent !== null
+            ? `${simulation.safetyMarginPercent.toFixed(
+                1
+              )}%`
+            : "N/A",
+        ],
+      ],
+    },
+
+    cacLtv: {
+      kicker: "CUSTOMER ECONOMICS",
+      title: "CAC / LTV intelligence",
+
+      description:
+        simulation.ltvCacRatio !== null
+          ? `The current scenario generates an estimated LTV to CAC ratio of ${simulation.ltvCacRatio.toFixed(
+              1
+            )}×.`
+          : "LTV / CAC cannot be calculated from the current assumptions.",
+
+      stats: [
+        [
+          "CAC",
+          `₹${scenario.cac.toLocaleString(
+            "en-IN"
+          )}`,
+        ],
+        [
+          "LTV",
+          simulation.ltv !== null
+            ? `₹${Math.round(
+                simulation.ltv
+              ).toLocaleString("en-IN")}`
+            : "N/A",
+        ],
+        [
+          "LTV : CAC",
+          simulation.ltvCacRatio !== null
+            ? `${simulation.ltvCacRatio.toFixed(
+                1
+              )}×`
+            : "N/A",
+        ],
+      ],
+    },
+
+    sensitivity: {
+      kicker: "DRIVER ANALYSIS",
+      title: "Sensitivity intelligence",
+
+      description:
+        "Each driver is stress-tested by ±10% and measured by its effect on operating profit.",
+
+      stats: [
+        ["Price", "Revenue leverage"],
+        [
+          "Variable cost",
+          "Direct margin pressure",
+        ],
+        ["Fixed cost", "Scale absorption"],
+        ["CAC", "Acquisition efficiency"],
+        ["Retention", "LTV expansion"],
+      ],
+    },
+  }[intelligence];
+
+  return (
+    <>
+      {/* =====================================================
+          BACKDROP
+      ===================================================== */}
+
+      <button
+        type="button"
+        aria-label="Close intelligence panel"
+        onClick={onClose}
+        className="intelligence-backdrop"
+      />
+
+
+      {/* =====================================================
+          SLIDE OVER
+      ===================================================== */}
+
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label="Intelligence panel"
+        className="intelligence-panel"
+      >
+
+        {/* HEADER */}
+
+        <div className="intelligence-header">
+
+          <div>
+
+            <div className="intelligence-kicker">
+              {content.kicker}
+            </div>
+
+            <h2>
+              {content.title}
+            </h2>
+
+          </div>
+
+
+          {/* CLOSE BUTTON — TOP RIGHT */}
+
+          <button
+            type="button"
+            aria-label="Close intelligence panel"
+            onClick={onClose}
+            className="intelligence-close"
+          >
+            <X size={18} strokeWidth={1.8} />
+          </button>
+
+        </div>
+
+
+        {/* HEADER DIVIDER */}
+
+        <div className="intelligence-divider" />
+
+
+        {/* DESCRIPTION */}
+
+        <section className="intelligence-description">
+
+          <div className="intelligence-section-label">
+            ANALYSIS
+          </div>
+
+          <p>
+            {content.description}
+          </p>
+
+        </section>
+
+
+        {/* OUTPUTS */}
+
+        <section className="intelligence-section">
+
+          <div className="intelligence-section-label">
+            KEY OUTPUTS
+          </div>
+
+          <div className="intelligence-stats">
+
+            {content.stats.map(
+              ([label, value], index) => (
+                <div
+                  key={label}
+                  className="intelligence-stat"
+                >
+
+                  <div className="intelligence-stat-index">
+                    {String(index + 1).padStart(
+                      2,
+                      "0"
+                    )}
+                  </div>
+
+                  <div className="intelligence-stat-content">
+
+                    <span>
+                      {label}
+                    </span>
+
+                    <strong>
+                      {value}
+                    </strong>
+
+                  </div>
+
+                </div>
+              )
+            )}
+
+          </div>
+
+        </section>
+
+
+        {/* MANAGEMENT QUESTION */}
+
+        <section className="management-question">
+
+          <div className="intelligence-section-label">
+            MANAGEMENT QUESTION
+          </div>
+
+          <h3>
+            Which assumption would you challenge first?
+          </h3>
+
+          <p>
+            If the scenario misses plan, identify the
+            operating assumption with the greatest impact
+            before changing the entire model.
+          </p>
+
+        </section>
+
+
+        {/* FOOTER */}
+
+        <div className="intelligence-footer">
+
+          <span className="footer-pulse" />
+
+          <span>
+            Click another visualization to switch intelligence
+          </span>
+
+        </div>
+
+      </aside>
+    </>
+  );
+}
+</file>
+
+<file path="app/components/MacroIntelligencepanel.tsx">
+"use client";
+
+import { FredSeries } from "@/lib/types";
+
+function signal(
+  treasury: FredSeries,
+  unemployment: FredSeries
+) {
+  const rate =
+    treasury.latest ?? 0;
+
+  const unemploymentRate =
+    unemployment.latest ?? 0;
+
+  if (
+    rate >= 4.5 ||
+    unemploymentRate >= 5
+  ) {
+    return {
+      label: "HIGH",
+      description:
+        "Macro conditions indicate elevated financing and demand pressure.",
+    };
+  }
+
+  if (
+    rate >= 3.5 ||
+    unemploymentRate >= 4.5
+  ) {
+    return {
+      label: "MEDIUM",
+      description:
+        "Macro conditions remain restrictive but manageable.",
+    };
+  }
+
+  return {
+    label: "LOW",
+    description:
+      "Macro conditions are relatively supportive.",
+  };
+}
+
+export default function MacroIntelligencePanel({
+  treasury10y,
+  unemployment,
+}: {
+  treasury10y: FredSeries;
+  unemployment: FredSeries;
+}) {
+  const currentSignal = signal(
+    treasury10y,
+    unemployment
+  );
+
+  return (
+    <aside className="space-y-3">
+      <section className="terminal-card p-4">
+        <div className="terminal-kicker">
+          MACRO SIGNAL
+        </div>
+
+        <div className="mt-3 flex items-center justify-between">
+          <div className="text-2xl font-semibold text-white">
+            {currentSignal.label}
+          </div>
+
+          <div className="signal-pulse" />
+        </div>
+
+        <p className="mt-3 text-[11px] leading-5 text-slate-400">
+          {currentSignal.description}
+        </p>
+      </section>
+
+      <section className="terminal-card p-4">
+        <div className="terminal-kicker">
+          WHY THIS MATTERS
+        </div>
+
+        <p className="mt-3 text-[11px] leading-5 text-slate-400">
+          Interest rates, inflation and labor-market
+          conditions influence financing costs,
+          demand assumptions and revenue planning.
+        </p>
+      </section>
+
+      <section className="terminal-card p-4">
+        <div className="terminal-kicker">
+          FRED DATA SOURCE
+        </div>
+
+        <div className="mt-3 space-y-2">
+          <div className="flex justify-between">
+            <span className="text-[10px] text-slate-500">
+              Treasury
+            </span>
+
+            <span className="text-[10px] text-cyan-400">
+              DGS10
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-[10px] text-slate-500">
+              Fed Funds
+            </span>
+
+            <span className="text-[10px] text-cyan-400">
+              DFF
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-[10px] text-slate-500">
+              CPI
+            </span>
+
+            <span className="text-[10px] text-cyan-400">
+              CPIAUCSL
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-[10px] text-slate-500">
+              Unemployment
+            </span>
+
+            <span className="text-[10px] text-cyan-400">
+              UNRATE
+            </span>
+          </div>
+        </div>
+      </section>
+    </aside>
+  );
+}
+</file>
+
+<file path="app/components/MetricCards.tsx">
+"use client";
+
+import { SimulationResult } from "@/lib/types";
+
+function compactMoney(value: number): string {
+  return new Intl.NumberFormat("en-IN", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+function Metric({
+  label,
+  value,
+  description,
+  valueColor,
+}: {
+  label: string;
+  value: string;
+  description: string;
+  valueColor: string;
+}) {
+  return (
+    <div
+      className="
+        group
+        relative
+        flex
+        min-h-[116px]
+        flex-col
+        justify-between
+        overflow-hidden
+        rounded-xl
+        border
+        border-[#1F2937]
+        bg-[#0B1117]
+        p-4
+        transition-all
+        duration-200
+        hover:border-[#38BDF8]/40
+      "
+    >
+      <div
+        className="
+          absolute
+          left-0
+          right-0
+          top-0
+          h-px
+          bg-[#38BDF8]/40
+        "
+      />
+
+      {/* LABEL */}
+      <div
+        className="
+          text-[10px]
+          font-medium
+          uppercase
+          tracking-[0.18em]
+          text-[#38BDF8]
+        "
+      >
+        {label}
+      </div>
+
+      {/* VALUE */}
+      <div
+        className={`
+          mt-2
+          text-2xl
+          font-semibold
+          tracking-tight
+          ${valueColor}
+        `}
+      >
+        {value}
+      </div>
+
+      {/* DESCRIPTION */}
+      <div
+        className="
+          mt-1
+          text-[9px]
+          uppercase
+          tracking-[0.08em]
+          text-slate-500
+        "
+      >
+        {description}
+      </div>
+    </div>
+  );
+}
+
+export default function MetricCards({
+  simulation,
+}: {
+  simulation: SimulationResult;
+}) {
+  return (
+    <div
+      className="
+        grid
+        grid-cols-1
+        gap-3
+        sm:grid-cols-2
+        xl:grid-cols-4
+      "
+    >
+      {/* OPERATING PROFIT */}
+      <Metric
+        label="Operating profit"
+        value={`₹${compactMoney(simulation.operatingProfit)}`}
+        description="monthly scenario"
+        valueColor="text-[#34D399]"
+      />
+
+      {/* CONTRIBUTION MARGIN */}
+      <Metric
+        label="Contribution margin"
+        value={`${simulation.contributionMarginPercent.toFixed(1)}%`}
+        description="per-unit economics"
+        valueColor="text-[#FBBF24]"
+      />
+
+      {/* BREAK-EVEN */}
+      <Metric
+        label="Break-even"
+        value={
+          simulation.breakEvenUnits !== null
+            ? simulation.breakEvenUnits.toLocaleString("en-IN", {
+                maximumFractionDigits: 0,
+              })
+            : "N/A"
+        }
+        description="units / month"
+        valueColor="text-[#FB923C]"
+      />
+
+      {/* LTV : CAC */}
+      <Metric
+        label="LTV : CAC"
+        value={
+          simulation.ltvCacRatio !== null
+            ? `${simulation.ltvCacRatio.toFixed(1)}×`
+            : "N/A"
+        }
+        description="customer economics"
+        valueColor="text-[#818CF8]"
+      />
+    </div>
+  );
+}
+</file>
+
+<file path="app/components/ScenarioControls.tsx">
+"use client";
+
+import { Scenario } from "@/lib/types";
+
+type Props = {
+  scenario: Scenario;
+
+  onChange: (
+    scenario: Scenario
+  ) => void;
+};
+
+function Slider({
+  label,
+  value,
+  min,
+  max,
+  step,
+  format,
+  onChange
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  format: (value: number) => string;
+  onChange: (
+    value: number
+  ) => void;
+}) {
+  return (
+    <label className="block">
+      <div
+        className="
+          mb-2
+          flex
+          items-center
+          justify-between
+        "
+      >
+        <span
+          className="
+            text-[9px]
+            uppercase
+            tracking-[0.16em]
+            text-slate-600
+          "
+        >
+          {label}
+        </span>
+
+        <span
+          className="
+            text-xs
+            font-medium
+            text-slate-300
+          "
+        >
+          {format(value)}
+        </span>
+      </div>
+
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(event) =>
+          onChange(
+            Number(
+              event.target.value
+            )
+          )
+        }
+        className="
+          range-control
+          h-1.5
+          w-full
+          cursor-pointer
+        "
+      />
+    </label>
+  );
+}
+
+export default function ScenarioControls({
+  scenario,
+  onChange
+}: Props) {
+  const update = (
+    key: keyof Scenario,
+    value: number | string
+  ) => {
+    onChange({
+      ...scenario,
+      [key]: value
+    });
+  };
+
+  const money = (
+    value: number
+  ) =>
+    `₹${value.toLocaleString(
+      "en-IN"
+    )}`;
+
+  return (
+    <aside
+      className="
+        glass-panel
+        absolute
+        bottom-4
+        left-4
+        z-30
+        w-[calc(100%-2rem)]
+        max-w-sm
+        rounded-2xl
+        p-4
+        shadow-cinematic
+        md:bottom-6
+        md:left-6
+      "
+    >
+      <div
+        className="
+          mb-5
+          flex
+          items-start
+          justify-between
+        "
+      >
+        <div>
+          <div
+            className="
+              text-[9px]
+              tracking-[0.25em]
+              text-violet
+            "
+          >
+            SCENARIO LAB
+          </div>
+
+          <div
+            className="
+              mt-1
+              text-sm
+              font-semibold
+            "
+          >
+            Move the economics
+          </div>
+        </div>
+
+        <span
+          className="
+            rounded-full
+            border
+            border-violet/20
+            bg-violet/5
+            px-2
+            py-1
+            text-[8px]
+            uppercase
+            tracking-wider
+            text-violet
+          "
+        >
+          Synthetic
+        </span>
+      </div>
+
+      <div className="space-y-4">
+        <label className="block">
+          <div
+            className="
+              mb-2
+              text-[9px]
+              uppercase
+              tracking-[0.16em]
+              text-slate-600
+            "
+          >
+            Product
+          </div>
+
+          <select
+            value={
+              scenario.product
+            }
+            onChange={(event) =>
+              update(
+                "product",
+                event.target.value
+              )
+            }
+            className="
+              w-full
+              rounded-lg
+              border
+              border-white/10
+              bg-black/30
+              px-3
+              py-2
+              text-xs
+              text-slate-300
+              outline-none
+              focus:border-violet/50
+            "
+          >
+            <option>
+              Core Platform
+            </option>
+
+            <option>
+              Pro Platform
+            </option>
+
+            <option>
+              Enterprise Platform
+            </option>
+          </select>
+        </label>
+
+        <Slider
+          label="Price / unit"
+          value={
+            scenario.price
+          }
+          min={500}
+          max={30000}
+          step={100}
+          format={money}
+          onChange={(value) =>
+            update(
+              "price",
+              value
+            )
+          }
+        />
+
+        <Slider
+          label="Variable cost / unit"
+          value={
+            scenario.variableCost
+          }
+          min={100}
+          max={15000}
+          step={50}
+          format={money}
+          onChange={(value) =>
+            update(
+              "variableCost",
+              value
+            )
+          }
+        />
+
+        <Slider
+          label="Monthly fixed cost"
+          value={
+            scenario.fixedCost
+          }
+          min={500000}
+          max={10000000}
+          step={100000}
+          format={money}
+          onChange={(value) =>
+            update(
+              "fixedCost",
+              value
+            )
+          }
+        />
+
+        <Slider
+          label="Monthly volume"
+          value={
+            scenario.units
+          }
+          min={1000}
+          max={50000}
+          step={100}
+          format={(value) =>
+            value.toLocaleString(
+              "en-IN"
+            )
+          }
+          onChange={(value) =>
+            update(
+              "units",
+              value
+            )
+          }
+        />
+
+        <Slider
+          label="CAC"
+          value={
+            scenario.cac
+          }
+          min={100}
+          max={10000}
+          step={50}
+          format={money}
+          onChange={(value) =>
+            update(
+              "cac",
+              value
+            )
+          }
+        />
+
+        <Slider
+          label="Retention"
+          value={
+            scenario.retentionMonths
+          }
+          min={3}
+          max={60}
+          step={1}
+          format={(value) =>
+            `${value} mo`
+          }
+          onChange={(value) =>
+            update(
+              "retentionMonths",
+              value
+            )
+          }
+        />
+      </div>
+    </aside>
+  );
+}
+</file>
+
+<file path="app/components/SensitivityTornado.tsx">
+"use client";
+
+import { Scenario, SimulationResult } from "@/lib/types";
+
+function money(value: number): string {
+  return new Intl.NumberFormat("en-IN", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+export default function SensitivityTornado({
+  scenario,
+  simulation,
+  onClick,
+}: {
+  scenario: Scenario;
+  simulation: SimulationResult;
+  onClick: () => void;
+}) {
+  const drivers = [
+    {
+      number: "01",
+      label: "Price",
+      value: scenario.price,
+      format: `₹${money(scenario.price)}`,
+    },
+    {
+      number: "02",
+      label: "Variable cost",
+      value: scenario.variableCost,
+      format: `₹${money(scenario.variableCost)}`,
+    },
+    {
+      number: "03",
+      label: "Fixed cost",
+      value: scenario.fixedCost,
+      format: `₹${money(scenario.fixedCost)}`,
+    },
+    {
+      number: "04",
+      label: "CAC",
+      value: scenario.cac,
+      format: `₹${money(scenario.cac)}`,
+    },
+    {
+      number: "05",
+      label: "Retention",
+      value: scenario.retentionMonths,
+      format: `${scenario.retentionMonths} mo`,
+    },
+  ];
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="
+        group
+        relative
+        flex
+        min-h-[350px]
+        w-full
+        flex-col
+        overflow-hidden
+        rounded-xl
+        border
+        border-[#1F2937]
+        bg-[#0B1117]
+        p-5
+        text-left
+        transition-all
+        duration-300
+        hover:border-[#38BDF8]/50
+      "
+    >
+      {/* TOP ACCENT */}
+      <div
+        className="
+          absolute
+          left-0
+          right-0
+          top-0
+          h-px
+          bg-[#38BDF8]/50
+        "
+      />
+
+      {/* HEADER */}
+      <div className="flex items-start justify-between">
+        <div>
+          <div
+            className="
+              text-[11px]
+              font-medium
+              uppercase
+              tracking-[0.18em]
+              text-[#38BDF8]
+            "
+          >
+            04 · DRIVER RISK
+          </div>
+
+          <div
+            className="
+              mt-1
+              text-[17px]
+              font-semibold
+              text-white
+            "
+          >
+            Sensitivity tornado
+          </div>
+        </div>
+
+        <div
+          className="
+            rounded-md
+            border
+            border-[#1F2937]
+            bg-[#030712]
+            px-2
+            py-1
+            text-[9px]
+            uppercase
+            tracking-[0.15em]
+            text-slate-500
+            group-hover:text-[#38BDF8]
+          "
+        >
+          Intelligence
+        </div>
+      </div>
+
+      {/* DESCRIPTION */}
+      <div
+        className="
+          mt-4
+          rounded-lg
+          border
+          border-[#1F2937]
+          bg-[#030712]/60
+          p-3
+        "
+      >
+        <div
+          className="
+            text-[10px]
+            uppercase
+            tracking-[0.15em]
+            text-[#38BDF8]
+          "
+        >
+          Driver sensitivity
+        </div>
+
+        <p
+          className="
+            mt-1
+            text-[11px]
+            leading-5
+            text-slate-400
+          "
+        >
+          Relative impact on operating profit when each
+          assumption moves by ±10%.
+        </p>
+      </div>
+
+      {/* DRIVER TABLE */}
+      <div className="mt-4 flex flex-1 flex-col justify-between">
+        {drivers.map((driver) => (
+          <div
+            key={driver.label}
+            className="
+              grid
+              grid-cols-[auto_1fr_auto]
+              items-center
+              gap-3
+              border-b
+              border-[#1F2937]/70
+              py-2.5
+              last:border-b-0
+            "
+          >
+            {/* NUMBER */}
+            <span
+              className="
+                flex
+                h-7
+                w-7
+                items-center
+                justify-center
+                rounded-md
+                border
+                border-[#1F2937]
+                bg-[#030712]
+                text-[9px]
+                font-semibold
+                text-[#38BDF8]
+              "
+            >
+              {driver.number}
+            </span>
+
+            {/* DRIVER NAME */}
+            <div>
+              <div
+                className="
+                  text-[12px]
+                  font-medium
+                  text-slate-300
+                "
+              >
+                {driver.label}
+              </div>
+
+              <div
+                className="
+                  mt-0.5
+                  text-[8px]
+                  uppercase
+                  tracking-[0.12em]
+                  text-slate-600
+                "
+              >
+                ±10% stress
+              </div>
+            </div>
+
+            {/* VALUE */}
+            <div
+              className="
+                text-right
+                text-[13px]
+                font-semibold
+                tracking-tight
+                text-white
+              "
+            >
+              {driver.format}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* FOOTER */}
+      <div
+        className="
+          mt-3
+          flex
+          items-center
+          justify-between
+          border-t
+          border-[#1F2937]
+          pt-3
+        "
+      >
+        <span
+          className="
+            text-[9px]
+            uppercase
+            tracking-[0.15em]
+            text-slate-600
+          "
+        >
+          Risk intelligence
+        </span>
+
+        <span
+          className="
+            text-[9px]
+            uppercase
+            tracking-[0.15em]
+            text-[#38BDF8]/70
+          "
+        >
+          Live scenario
+        </span>
+      </div>
+    </button>
+  );
+}
+</file>
+
+<file path="app/components/SimulatorShell.tsx">
+"use client";
+
+import { useMemo, useState } from "react";
+
+import ContributionWaterfall from "./ContributionWaterfall";
+import BreakEvenChart from "./BreakEvenChart";
+import CacLtvScatter from "./CacLtvScatter";
+import SensitivityTornado from "./SensitivityTornado";
+import MetricCards from "./MetricCards";
+import ScenarioControls from "./ScenarioControls";
+import IntelligencePanel from "./IntelligencePanel";
+
+import {
+  calculateSimulation
+} from "@/lib/calculations";
+
+import {
+  defaultScenario
+} from "@/lib/mockData";
+
+import {
+  IntelligenceType,
+  Scenario
+} from "@/lib/types";
+
+export default function SimulatorShell({
+  onInfo
+}: {
+  onInfo: () => void;
+}) {
+  const [scenario, setScenario] =
+    useState<Scenario>(defaultScenario);
+
+  const [intelligence, setIntelligence] =
+    useState<IntelligenceType>(null);
+
+  const simulation = useMemo(
+    () => calculateSimulation(scenario),
+    [scenario]
+  );
+
+  return (
+    <main className="dashboard-shell">
+
+      {/* =====================================================
+          TOP HEADER
+      ===================================================== */}
+
+      <header className="dashboard-header">
+
+        <div className="header-brand">
+
+          <div className="brand-kicker">
+            INFOCREON INTERNSHIP
+          </div>
+
+          <h1>
+            UNIT ECONOMICS &amp; BREAK-EVEN SIMULATOR
+          </h1>
+
+          <p>
+            FINANCE &amp; CASH · SCENARIO INTELLIGENCE
+          </p>
+
+        </div>
+
+        <div className="header-actions">
+
+          <div className="live-status">
+            <span className="live-dot" />
+            LIVE SIMULATION
+          </div>
+
+          <button
+            type="button"
+            className="header-info-button"
+            onClick={onInfo}
+          >
+            INFO
+          </button>
+
+        </div>
+
+      </header>
+
+
+      {/* =====================================================
+          SMALL SECTION INTRO
+      ===================================================== */}
+
+      <section className="dashboard-intro">
+
+        <div>
+
+          <div className="section-kicker">
+            FINANCE &amp; CASH
+          </div>
+
+          <h2>
+            Does growth create value — or just absorb more cash?
+          </h2>
+
+          <p>
+            Change the operating assumptions and watch
+            contribution, break-even and customer economics
+            move together.
+          </p>
+
+        </div>
+
+        <div className="data-mode">
+
+          <span>DATA MODE</span>
+
+          <strong>
+            SYNTHETIC SCENARIO
+          </strong>
+
+        </div>
+
+      </section>
+
+
+      {/* =====================================================
+          MAIN THREE COLUMN DASHBOARD
+      ===================================================== */}
+
+      <section className="dashboard-layout">
+
+
+        {/* =================================================
+            LEFT — SCENARIO CONTROLS
+        ================================================= */}
+
+        <aside className="scenario-sidebar">
+
+          <div className="sidebar-heading">
+
+            <div>
+
+              <div className="panel-kicker">
+                SCENARIO LAB
+              </div>
+
+              <h3>
+                Move the economics
+              </h3>
+
+            </div>
+
+            <span className="synthetic-badge">
+              SYNTHETIC
+            </span>
+
+          </div>
+
+          <ScenarioControls
+            scenario={scenario}
+            onChange={setScenario}
+          />
+
+        </aside>
+
+
+        {/* =================================================
+            CENTER — MAIN ANALYTICS
+        ================================================= */}
+
+        <section className="analytics-column">
+
+
+          {/* KPI CARDS */}
+
+          <div className="metrics-area">
+
+            <MetricCards
+              simulation={simulation}
+            />
+
+          </div>
+
+
+          {/* ANALYTICS GRID */}
+
+          <div className="analytics-grid">
+
+            <ContributionWaterfall
+              simulation={simulation}
+              onClick={() =>
+                setIntelligence("waterfall")
+              }
+            />
+
+            <BreakEvenChart
+              simulation={simulation}
+              units={scenario.units}
+              onClick={() =>
+                setIntelligence("breakEven")
+              }
+            />
+
+            <CacLtvScatter
+              simulation={simulation}
+              onClick={() =>
+                setIntelligence("cacLtv")
+              }
+            />
+
+            <SensitivityTornado
+              scenario={scenario}
+              simulation={simulation}
+              onClick={() =>
+                setIntelligence("sensitivity")
+              }
+            />
+
+          </div>
+
+
+          {/* LOWER INFORMATION STRIP */}
+
+          <section className="decision-strip">
+
+            <div className="decision-card">
+
+              <div className="panel-kicker">
+                OPERATING VIEW
+              </div>
+
+              <h3>
+                Unit economics intelligence
+              </h3>
+
+              <p>
+                The simulator connects price, variable cost,
+                fixed cost, volume, CAC and retention into one
+                operating scenario.
+              </p>
+
+            </div>
+
+
+            <div className="decision-card">
+
+              <div className="panel-kicker">
+                CURRENT SCENARIO
+              </div>
+
+              <div className="scenario-summary">
+
+                <div>
+                  <span>Product</span>
+                  <strong>
+                    {scenario.product}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Volume</span>
+                  <strong>
+                    {scenario.units.toLocaleString("en-IN")}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Margin</span>
+                  <strong>
+                    {simulation.contributionMarginPercent.toFixed(1)}%
+                  </strong>
+                </div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+        </section>
+
+
+        {/* =================================================
+            RIGHT — INTELLIGENCE / SIGNAL PANEL
+        ================================================= */}
+
+        <aside className="insight-sidebar">
+
+          <section className="insight-card signal-card">
+
+            <div className="panel-kicker">
+              SCENARIO SIGNAL
+            </div>
+
+            <div className="signal-header">
+
+              <div>
+
+                <div className="signal-value">
+
+                  {simulation.operatingProfit >= 0
+                    ? "POSITIVE"
+                    : "PRESSURED"}
+
+                </div>
+
+                <div className="signal-caption">
+                  Operating position
+                </div>
+
+              </div>
+
+              <span className="signal-pulse" />
+
+            </div>
+
+            <p>
+              {simulation.operatingProfit >= 0
+                ? "Current contribution absorbs the fixed-cost base and produces positive operating profit."
+                : "Current contribution does not fully absorb the fixed-cost base."}
+            </p>
+
+          </section>
+
+
+          <section className="insight-card">
+
+            <div className="panel-kicker">
+              KEY OUTPUTS
+            </div>
+
+            <div className="output-list">
+
+              <div className="output-row">
+
+                <span>
+                  Operating profit
+                </span>
+
+                <strong
+                  className={
+                    simulation.operatingProfit >= 0
+                      ? "positive-value"
+                      : "negative-value"
+                  }
+                >
+                  ₹
+                  {Math.round(
+                    simulation.operatingProfit
+                  ).toLocaleString("en-IN")}
+                </strong>
+
+              </div>
+
+
+              <div className="output-row">
+
+                <span>
+                  Break-even
+                </span>
+
+                <strong>
+                  {simulation.breakEvenUnits !== null
+                    ? Math.ceil(
+                        simulation.breakEvenUnits
+                      ).toLocaleString("en-IN")
+                    : "N/A"}
+                </strong>
+
+              </div>
+
+
+              <div className="output-row">
+
+                <span>
+                  LTV : CAC
+                </span>
+
+                <strong
+                  className={
+                    simulation.ltvCacRatio !== null &&
+                    simulation.ltvCacRatio >= 3
+                      ? "positive-value"
+                      : ""
+                  }
+                >
+                  {simulation.ltvCacRatio !== null
+                    ? `${simulation.ltvCacRatio.toFixed(1)}×`
+                    : "N/A"}
+                </strong>
+
+              </div>
+
+
+              <div className="output-row">
+
+                <span>
+                  Safety margin
+                </span>
+
+                <strong>
+                  {simulation.safetyMarginPercent !== null
+                    ? `${simulation.safetyMarginPercent.toFixed(1)}%`
+                    : "N/A"}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <section className="insight-card">
+
+            <div className="panel-kicker">
+              WHY THIS MATTERS
+            </div>
+
+            <p>
+              Growth only creates value when additional
+              contribution grows faster than the cash absorbed
+              by variable costs and the fixed-cost base.
+            </p>
+
+          </section>
+
+
+          <section className="insight-card">
+
+            <div className="panel-kicker">
+              DRIVER WATCH
+            </div>
+
+            <div className="driver-list">
+
+              <div>
+                <span>Price</span>
+                <span className="driver-positive">
+                  REVENUE
+                </span>
+              </div>
+
+              <div>
+                <span>Variable cost</span>
+                <span className="driver-negative">
+                  MARGIN
+                </span>
+              </div>
+
+              <div>
+                <span>Fixed cost</span>
+                <span className="driver-warning">
+                  ABSORPTION
+                </span>
+              </div>
+
+              <div>
+                <span>CAC</span>
+                <span className="driver-positive">
+                  EFFICIENCY
+                </span>
+              </div>
+
+              <div>
+                <span>Retention</span>
+                <span className="driver-positive">
+                  LTV
+                </span>
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <button
+            type="button"
+            className="intelligence-hint"
+            onClick={() => setIntelligence("waterfall")}
+          >
+            <span>
+              Click any visualization
+            </span>
+
+            <strong>
+              OPEN INTELLIGENCE →
+            </strong>
+          </button>
+
+        </aside>
+
+      </section>
+
+
+      
+
+
+      {/* =====================================================
+          INTELLIGENCE SLIDE OVER
+      ===================================================== */}
+
+      <IntelligencePanel
+        intelligence={intelligence}
+        simulation={simulation}
+        scenario={scenario}
+        onClose={() => setIntelligence(null)}
+      />
+
+    </main>
+  );
+}
+</file>
+
+<file path="app/globals.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* =========================================================
+   DESIGN TOKENS
+========================================================= */
+
+:root {
+  --bg: #030712;
+  --surface: #0b1117;
+  --surface-2: #0f1720;
+
+  --border: #1f2937;
+  --border-soft: rgba(56, 189, 248, 0.14);
+
+  --cyan: #38bdf8;
+  --cyan-soft: rgba(56, 189, 248, 0.12);
+
+  --indigo: #818cf8;
+  --indigo-soft: rgba(129, 140, 248, 0.12);
+
+  --green: #34d399;
+  --yellow: #fbbf24;
+  --red: #fb7185;
+
+  --text: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --muted: #64748b;
+  --muted-dark: #475569;
+}
+
+
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at 72% -10%,
+      rgba(56, 189, 248, 0.08),
+      transparent 32rem
+    ),
+    radial-gradient(
+      circle at 5% 50%,
+      rgba(129, 140, 248, 0.045),
+      transparent 30rem
+    ),
+    var(--bg);
+
+  color: var(--text);
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+select,
+input {
+  outline: none;
+}
+
+::selection {
+  background: rgba(56, 189, 248, 0.25);
+}
+
+
+/* =========================================================
+   MAIN DASHBOARD
+========================================================= */
+
+.dashboard-shell {
+  width: 100%;
+  min-height: 100vh;
+
+  padding:
+    22px
+    24px
+    40px;
+
+  background-image:
+    linear-gradient(
+      rgba(56, 189, 248, 0.018) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(56, 189, 248, 0.018) 1px,
+      transparent 1px
+    );
+
+  background-size: 42px 42px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.dashboard-header {
+  width: 100%;
+  max-width: 1680px;
+
+  margin: 0 auto;
+
+  padding:
+    2px
+    2px
+    20px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  border-bottom:
+    1px solid
+    rgba(31, 41, 55, 0.85);
+}
+
+.header-brand {
+  min-width: 0;
+}
+
+.brand-kicker,
+.panel-kicker,
+.section-kicker {
+  color: var(--cyan);
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 0.2em;
+
+  text-transform: uppercase;
+}
+
+.header-brand h1 {
+  margin: 8px 0 0;
+
+  color: #ffffff;
+
+  font-size: clamp(20px, 2vw, 30px);
+
+  font-weight: 700;
+
+  letter-spacing: -0.035em;
+
+  line-height: 1.1;
+}
+
+.header-brand p {
+  margin: 7px 0 0;
+
+  color: var(--muted);
+
+  font-size: 10px;
+
+  letter-spacing: 0.15em;
+
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  flex-shrink: 0;
+}
+
+.live-status {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  min-height: 30px;
+
+  padding: 0 11px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 7px;
+
+  background:
+    rgba(11, 17, 23, 0.9);
+
+  color: var(--muted);
+
+  font-size: 8px;
+
+  letter-spacing: 0.12em;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: var(--green);
+
+  box-shadow:
+    0 0 9px
+    rgba(52, 211, 153, 0.75);
+}
+
+.header-info-button {
+  min-height: 30px;
+
+  padding: 0 13px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 7px;
+
+  background: var(--surface);
+
+  color: var(--muted);
+
+  font-size: 8px;
+
+  letter-spacing: 0.12em;
+
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease;
+}
+
+.header-info-button:hover {
+  border-color:
+    rgba(56, 189, 248, 0.5);
+
+  background:
+    rgba(56, 189, 248, 0.06);
+
+  color: var(--cyan);
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.dashboard-intro {
+  width: 100%;
+  max-width: 1680px;
+
+  margin:
+    20px
+    auto
+    14px;
+
+  padding:
+    16px
+    18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 9px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(11, 17, 23, 0.94),
+      rgba(5, 12, 18, 0.94)
+    );
+
+  box-shadow:
+    0 12px 35px
+    rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-intro h2 {
+  margin: 6px 0 0;
+
+  color: #ffffff;
+
+  font-size: 18px;
+
+  font-weight: 650;
+
+  letter-spacing: -0.025em;
+}
+
+.dashboard-intro p {
+  margin: 6px 0 0;
+
+  max-width: 760px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+
+  line-height: 1.6;
+}
+
+.data-mode {
+  min-width: 150px;
+
+  padding:
+    9px
+    11px;
+
+  border-left:
+    1px solid
+    var(--border);
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.data-mode span {
+  color: var(--muted);
+
+  font-size: 7px;
+
+  letter-spacing: 0.16em;
+}
+
+.data-mode strong {
+  color: var(--cyan);
+
+  font-size: 9px;
+
+  letter-spacing: 0.08em;
+}
+
+
+/* =========================================================
+   MAIN THREE COLUMN STRUCTURE
+========================================================= */
+
+.dashboard-layout {
+  width: 100%;
+  max-width: 1680px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    250px
+    minmax(0, 1fr)
+    270px;
+
+  gap: 12px;
+
+  align-items: start;
+}
+
+
+/* =========================================================
+   COMMON PANEL
+========================================================= */
+
+.scenario-sidebar,
+.insight-card,
+.decision-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(11, 17, 23, 0.97),
+      rgba(6, 12, 18, 0.97)
+    );
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 9px;
+
+  box-shadow:
+    0 12px 35px
+    rgba(0, 0, 0, 0.18);
+
+  backdrop-filter: blur(14px);
+}
+
+
+/* =========================================================
+   LEFT SCENARIO SIDEBAR
+========================================================= */
+
+.scenario-sidebar {
+  position: relative;
+
+  padding: 16px;
+
+  min-height: 610px;
+}
+
+.sidebar-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 8px;
+
+  padding-bottom: 14px;
+
+  border-bottom:
+    1px solid
+    rgba(31, 41, 55, 0.8);
+}
+
+.sidebar-heading h3 {
+  margin: 5px 0 0;
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  font-weight: 650;
+}
+
+.synthetic-badge {
+  padding:
+    4px
+    7px;
+
+  border:
+    1px solid
+    rgba(129, 140, 248, 0.25);
+
+  border-radius: 999px;
+
+  background:
+    rgba(129, 140, 248, 0.07);
+
+  color: var(--indigo);
+
+  font-size: 7px;
+
+  letter-spacing: 0.1em;
+}
+
+
+/*
+   Your existing ScenarioControls component uses
+   absolute positioning.
+
+   We deliberately cancel that positioning here so
+   it becomes a normal sidebar panel.
+*/
+
+.scenario-sidebar .glass-panel {
+  position: static !important;
+
+  width: 100% !important;
+
+  max-width: none !important;
+
+  margin: 14px 0 0 !important;
+
+  padding: 0 !important;
+
+  border: 0 !important;
+
+  background: transparent !important;
+
+  box-shadow: none !important;
+}
+
+
+/* Hide the duplicate heading inside the old control */
+.scenario-sidebar .glass-panel > div:first-child {
+  display: none;
+}
+
+
+/* Scenario controls */
+
+.scenario-sidebar label {
+  display: block;
+
+  margin-bottom: 16px;
+}
+
+.scenario-sidebar label > div {
+  margin-bottom: 7px;
+}
+
+.scenario-sidebar label span {
+  color: var(--muted);
+}
+
+.scenario-sidebar label span:last-child {
+  color: var(--text-secondary);
+
+  font-size: 10px;
+}
+
+
+/* Product select */
+
+.scenario-sidebar select {
+  width: 100%;
+
+  min-height: 34px;
+
+  padding:
+    0
+    10px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 6px;
+
+  background:
+    #071018 !important;
+
+  color: var(--text-secondary) !important;
+
+  font-size: 10px;
+
+  appearance: auto;
+}
+
+.scenario-sidebar select:hover,
+.scenario-sidebar select:focus {
+  border-color:
+    rgba(56, 189, 248, 0.5);
+}
+
+.scenario-sidebar select option {
+  background: #0b1117;
+
+  color: #f8fafc;
+}
+
+
+/* Range controls */
+
+.scenario-sidebar input[type="range"] {
+  width: 100%;
+
+  height: 4px;
+
+  margin: 4px 0 0;
+
+  appearance: none;
+
+  border-radius: 999px;
+
+  background:
+    #1f2937;
+
+  cursor: pointer;
+}
+
+.scenario-sidebar input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+
+  width: 11px;
+  height: 11px;
+
+  border: 2px solid
+    var(--cyan);
+
+  border-radius: 50%;
+
+  background:
+    #071018;
+
+  box-shadow:
+    0 0 8px
+    rgba(56, 189, 248, 0.45);
+}
+
+.scenario-sidebar input[type="range"]::-moz-range-thumb {
+  width: 11px;
+  height: 11px;
+
+  border:
+    2px solid
+    var(--cyan);
+
+  border-radius: 50%;
+
+  background:
+    #071018;
+}
+
+
+/* =========================================================
+   CENTER
+========================================================= */
+
+.analytics-column {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   KPI METRICS
+========================================================= */
+
+.metrics-area {
+  width: 100%;
+
+  margin-bottom: 12px;
+}
+
+.metrics-area > div {
+  display: grid !important;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr)) !important;
+
+  gap: 9px !important;
+}
+
+.metrics-area > div > div {
+  min-height: 92px;
+
+  padding: 13px !important;
+
+  border:
+    1px solid
+    var(--border) !important;
+
+  border-radius: 8px !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(11, 17, 23, 0.98),
+      rgba(6, 12, 18, 0.98)
+    ) !important;
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.015);
+}
+
+.metrics-area > div > div:hover {
+  border-color:
+    rgba(56, 189, 248, 0.28) !important;
+
+  box-shadow:
+    0 0 0 1px
+    rgba(56, 189, 248, 0.035),
+    0 10px 30px
+    rgba(0, 0, 0, 0.2);
+}
+
+.metrics-area .metric-number {
+  color: #ffffff;
+
+  font-size: 21px;
+
+  line-height: 1.1;
+}
+
+.metrics-area > div > div:first-child .metric-number {
+  color: var(--green);
+}
+
+
+/* =========================================================
+   CHART GRID
+========================================================= */
+
+.analytics-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+
+  min-width: 0;
+}
+
+
+/*
+   Existing chart components return <button>.
+   This CSS turns those buttons into proper dashboard
+   cards instead of browser-default white buttons.
+*/
+
+.analytics-grid > button {
+  width: 100%;
+
+  min-width: 0;
+
+  min-height: 300px;
+
+  padding: 15px !important;
+
+  border:
+    1px solid
+    var(--border) !important;
+
+  border-radius: 9px !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(11, 17, 23, 0.98),
+      rgba(6, 12, 18, 0.98)
+    ) !important;
+
+  color: var(--text) !important;
+
+  text-align: left;
+
+  box-shadow:
+    0 12px 35px
+    rgba(0, 0, 0, 0.17);
+
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.analytics-grid > button:hover {
+  border-color:
+    rgba(56, 189, 248, 0.32) !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(12, 21, 29, 0.99),
+      rgba(6, 13, 20, 0.99)
+    ) !important;
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 0 0 1px
+    rgba(56, 189, 248, 0.04),
+    0 18px 42px
+    rgba(0, 0, 0, 0.25);
+}
+
+
+/* Chart headings */
+
+.analytics-grid > button .text-violet,
+.analytics-grid > button .text-violet\/80 {
+  color: var(--cyan) !important;
+}
+
+.analytics-grid > button .text-slate-700 {
+  color: var(--muted-dark) !important;
+}
+
+.analytics-grid > button .text-sm {
+  color: #f8fafc !important;
+}
+
+
+/* =========================================================
+   LOWER DECISION STRIP
+========================================================= */
+
+.decision-strip {
+  display: grid;
+
+  grid-template-columns:
+    1.15fr
+    0.85fr;
+
+  gap: 12px;
+
+  margin-top: 12px;
+}
+
+.decision-card {
+  padding: 15px;
+}
+
+.decision-card h3 {
+  margin: 6px 0 0;
+
+  color: #ffffff;
+
+  font-size: 13px;
+}
+
+.decision-card p {
+  margin: 7px 0 0;
+
+  color: var(--muted);
+
+  font-size: 9px;
+
+  line-height: 1.7;
+}
+
+.scenario-summary {
+  margin-top: 10px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 8px;
+}
+
+.scenario-summary div {
+  padding: 9px;
+
+  border:
+    1px solid
+    rgba(31, 41, 55, 0.9);
+
+  border-radius: 6px;
+
+  background:
+    rgba(3, 7, 18, 0.45);
+}
+
+.scenario-summary span {
+  display: block;
+
+  color: var(--muted);
+
+  font-size: 7px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.1em;
+}
+
+.scenario-summary strong {
+  display: block;
+
+  margin-top: 4px;
+
+  color: var(--text-secondary);
+
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   RIGHT INTELLIGENCE SIDEBAR
+========================================================= */
+
+.insight-sidebar {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.insight-card {
+  padding: 14px;
+}
+
+.signal-card {
+  border-color:
+    rgba(56, 189, 248, 0.22);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8, 28, 38, 0.97),
+      rgba(7, 16, 24, 0.97)
+    );
+}
+
+.signal-header {
+  margin-top: 11px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+.signal-value {
+  color: var(--cyan);
+
+  font-size: 20px;
+
+  font-weight: 700;
+
+  letter-spacing: -0.03em;
+}
+
+.signal-caption {
+  margin-top: 2px;
+
+  color: var(--muted);
+
+  font-size: 8px;
+}
+
+.signal-pulse {
+  width: 11px;
+  height: 11px;
+
+  border-radius: 50%;
+
+  background: var(--cyan);
+
+  box-shadow:
+    0 0 16px
+    rgba(56, 189, 248, 0.75);
+}
+
+.insight-card p {
+  margin: 10px 0 0;
+
+  color: var(--muted);
+
+  font-size: 9px;
+
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   OUTPUT LIST
+========================================================= */
+
+.output-list {
+  margin-top: 10px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.output-row {
+  min-height: 34px;
+
+  padding:
+    7px
+    9px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 8px;
+
+  border:
+    1px solid
+    rgba(31, 41, 55, 0.85);
+
+  border-radius: 6px;
+
+  background:
+    rgba(3, 7, 18, 0.5);
+}
+
+.output-row span {
+  color: var(--muted);
+
+  font-size: 8px;
+}
+
+.output-row strong {
+  color: var(--text-secondary);
+
+  font-size: 9px;
+}
+
+.positive-value {
+  color: var(--green) !important;
+}
+
+.negative-value {
+  color: var(--red) !important;
+}
+
+
+/* =========================================================
+   DRIVER WATCH
+========================================================= */
+
+.driver-list {
+  margin-top: 10px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.driver-list > div {
+  padding:
+    7px
+    8px;
+
+  display: flex;
+
+  justify-content: space-between;
+
+  border-bottom:
+    1px solid
+    rgba(31, 41, 55, 0.65);
+}
+
+.driver-list span:first-child {
+  color: var(--muted);
+
+  font-size: 8px;
+}
+
+.driver-list span:last-child {
+  font-size: 7px;
+
+  letter-spacing: 0.08em;
+}
+
+.driver-positive {
+  color: var(--green);
+}
+
+.driver-negative {
+  color: var(--red);
+}
+
+.driver-warning {
+  color: var(--yellow);
+}
+
+
+/* =========================================================
+   INTELLIGENCE BUTTON
+========================================================= */
+
+.intelligence-hint {
+  width: 100%;
+
+  padding:
+    11px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  gap: 4px;
+
+  border:
+    1px solid
+    rgba(56, 189, 248, 0.22);
+
+  border-radius: 7px;
+
+  background:
+    rgba(56, 189, 248, 0.045);
+
+  color: var(--muted);
+
+  text-align: left;
+}
+
+.intelligence-hint span {
+  font-size: 8px;
+}
+
+.intelligence-hint strong {
+  color: var(--cyan);
+
+  font-size: 8px;
+
+  letter-spacing: 0.08em;
+}
+
+.intelligence-hint:hover {
+  border-color:
+    rgba(56, 189, 248, 0.5);
+
+  background:
+    rgba(56, 189, 248, 0.08);
+}
+
+
+/* =========================================================
+   EXISTING INTELLIGENCE SLIDE OVER
+========================================================= */
+
+.intelligence-backdrop {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 90;
+
+  width: 100%;
+  height: 100%;
+
+  border: 0;
+
+  background:
+    rgba(0, 0, 0, 0.72);
+
+  backdrop-filter:
+    blur(7px);
+}
+
+.intelligence-panel {
+  position: fixed;
+
+  top: 0;
+  right: 0;
+
+  z-index: 100;
+
+  width: min(430px, 92vw);
+
+  height: 100vh;
+
+  overflow-y: auto;
+
+  border-left:
+    1px solid
+    var(--border);
+
+  background:
+    linear-gradient(
+      160deg,
+      #0b1117,
+      #050b11
+    );
+
+  box-shadow:
+    -20px 0 60px
+    rgba(0, 0, 0, 0.45);
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.info-modal {
+  background:
+    linear-gradient(
+      145deg,
+      #0b1117,
+      #050b11
+    ) !important;
+
+  border:
+    1px solid
+    rgba(56, 189, 248, 0.18) !important;
+}
+
+
+/* =========================================================
+   DEVELOPER SIGNATURE
+========================================================= */
+
+.dashboard-shell .pointer-events-none.absolute {
+  position: static !important;
+
+  margin:
+    18px
+    0
+    0
+    auto;
+
+  width: fit-content;
+
+  text-align: right;
+}
+
+.dashboard-shell .pointer-events-none.absolute > div {
+  color: #475569 !important;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #030712;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1f2937;
+
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1250px) {
+
+  .dashboard-layout {
+    grid-template-columns:
+      220px
+      minmax(0, 1fr);
+  }
+
+  .insight-sidebar {
+    grid-column:
+      1 / -1;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .intelligence-hint {
+    grid-column:
+      1 / -1;
+  }
+
+}
+
+
+@media (max-width: 900px) {
+
+  .dashboard-shell {
+    padding: 14px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .dashboard-layout {
+    grid-template-columns:
+      1fr;
+  }
+
+  .scenario-sidebar {
+    min-height: auto;
+  }
+
+  .insight-sidebar {
+    display: flex;
+  }
+
+  .metrics-area > div {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr)) !important;
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .dashboard-intro {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .data-mode {
+    width: 100%;
+
+    border-left: 0;
+
+    border-top:
+      1px solid
+      var(--border);
+
+    padding:
+      10px
+      0
+      0;
+  }
+
+  .analytics-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .decision-strip {
+    grid-template-columns:
+      1fr;
+  }
+
+  .scenario-summary {
+    grid-template-columns:
+      1fr;
+  }
+
+  .metrics-area > div {
+    grid-template-columns:
+      1fr !important;
+  }
+
+}
+/* =========================================================
+   INTELLIGENCE SLIDE-OVER
+========================================================= */
+
+.intelligence-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+
+  z-index: 90 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+
+  background:
+    rgba(1, 4, 9, 0.76) !important;
+
+  backdrop-filter:
+    blur(8px);
+
+  cursor: default !important;
+}
+
+
+/* PANEL */
+
+.intelligence-panel {
+  position: fixed !important;
+
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  z-index: 100 !important;
+
+  width: min(430px, 92vw) !important;
+  height: 100vh !important;
+
+  overflow-y: auto !important;
+
+  padding: 0 !important;
+
+  border-left:
+    1px solid
+    rgba(56, 189, 248, 0.18) !important;
+
+  border-radius: 0 !important;
+
+  background:
+    linear-gradient(
+      160deg,
+      #0b1117 0%,
+      #071019 55%,
+      #030712 100%
+    ) !important;
+
+  color: #f8fafc !important;
+
+  box-shadow:
+    -24px 0 70px
+    rgba(0, 0, 0, 0.55) !important;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+}
+
+
+/* HEADER */
+
+.intelligence-header {
+  min-height: 112px;
+
+  padding:
+    26px
+    26px
+    20px;
+
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 18px;
+}
+
+.intelligence-kicker {
+  color: #38bdf8;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 0.2em;
+
+  text-transform: uppercase;
+}
+
+.intelligence-header h2 {
+  margin: 8px 0 0;
+
+  color: #f8fafc;
+
+  font-size: 22px;
+
+  font-weight: 650;
+
+  letter-spacing: -0.03em;
+
+  line-height: 1.15;
+}
+
+
+/* CLOSE BUTTON */
+
+.intelligence-close {
+  flex-shrink: 0;
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    #1f2937;
+
+  border-radius: 7px;
+
+  background:
+    #0b1117;
+
+  color:
+    #64748b;
+
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease;
+}
+
+.intelligence-close:hover {
+  border-color:
+    rgba(56, 189, 248, 0.5);
+
+  background:
+    rgba(56, 189, 248, 0.07);
+
+  color:
+    #f8fafc;
+}
+
+
+/* DIVIDER */
+
+.intelligence-divider {
+  height: 1px;
+
+  margin:
+    0
+    26px;
+
+  background:
+    #1f2937;
+}
+
+
+/* DESCRIPTION */
+
+.intelligence-description {
+  padding:
+    22px
+    26px
+    10px;
+}
+
+.intelligence-section-label {
+  color:
+    #64748b;
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+
+  text-transform: uppercase;
+}
+
+.intelligence-description p {
+  margin:
+    9px
+    0
+    0;
+
+  color:
+    #cbd5e1;
+
+  font-size: 11px;
+
+  line-height: 1.75;
+}
+
+
+/* SECTION */
+
+.intelligence-section {
+  padding:
+    18px
+    26px;
+}
+
+
+/* STAT LIST */
+
+.intelligence-stats {
+  margin-top: 10px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+/* INDIVIDUAL STAT */
+
+.intelligence-stat {
+  min-height: 52px;
+
+  display: flex;
+
+  align-items: center;
+
+  border:
+    1px solid
+    #1f2937;
+
+  border-radius: 7px;
+
+  background:
+    rgba(11, 17, 23, 0.85);
+
+  overflow: hidden;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.intelligence-stat:hover {
+  border-color:
+    rgba(56, 189, 248, 0.28);
+
+  background:
+    rgba(14, 25, 34, 0.95);
+}
+
+
+/* NUMBER */
+
+.intelligence-stat-index {
+  width: 46px;
+
+  align-self: stretch;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-right:
+    1px solid
+    #1f2937;
+
+  color:
+    #38bdf8;
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+}
+
+
+/* STAT CONTENT */
+
+.intelligence-stat-content {
+  flex: 1;
+
+  min-width: 0;
+
+  padding:
+    9px
+    12px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.intelligence-stat-content span {
+  color:
+    #94a3b8;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+}
+
+.intelligence-stat-content strong {
+  color:
+    #f8fafc;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  text-align: right;
+}
+
+
+/* MANAGEMENT QUESTION */
+
+.management-question {
+  margin:
+    8px
+    26px
+    22px;
+
+  padding:
+    16px;
+
+  border:
+    1px solid
+    rgba(56, 189, 248, 0.18);
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(56, 189, 248, 0.07),
+      rgba(56, 189, 248, 0.025)
+    );
+}
+
+.management-question
+.intelligence-section-label {
+  color:
+    #38bdf8;
+}
+
+.management-question h3 {
+  margin:
+    9px
+    0
+    0;
+
+  color:
+    #f8fafc;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  line-height: 1.45;
+}
+
+.management-question p {
+  margin:
+    7px
+    0
+    0;
+
+  color:
+    #64748b;
+
+  font-size: 9px;
+
+  line-height: 1.7;
+}
+
+
+/* FOOTER */
+
+.intelligence-footer {
+  margin:
+    0
+    26px
+    26px;
+
+  padding-top:
+    16px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  border-top:
+    1px solid
+    #1f2937;
+
+  color:
+    #475569;
+
+  font-size: 8px;
+
+  line-height: 1.5;
+
+  letter-spacing: 0.04em;
+}
+
+.footer-pulse {
+  width: 6px;
+  height: 6px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    #38bdf8;
+
+  box-shadow:
+    0 0 9px
+    rgba(56, 189, 248, 0.7);
+}
+
+
+/* PANEL SCROLLBAR */
+
+.intelligence-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.intelligence-panel::-webkit-scrollbar-track {
+  background:
+    #030712;
+}
+
+.intelligence-panel::-webkit-scrollbar-thumb {
+  background:
+    #1f2937;
+
+  border-radius:
+    999px;
+}
+/* =========================================================
+   PROJECT INFORMATION MODAL
+========================================================= */
+
+.project-info-backdrop {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 200;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background:
+    rgba(1, 4, 9, 0.78);
+
+  backdrop-filter:
+    blur(9px);
+}
+
+
+.project-info-modal {
+  width: min(
+    520px,
+    100%
+  );
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(56, 189, 248, 0.18);
+
+  border-radius: 10px;
+
+  background:
+    linear-gradient(
+      150deg,
+      #0b1117,
+      #071019
+    );
+
+  box-shadow:
+    0 30px 90px
+    rgba(0, 0, 0, 0.55);
+}
+
+
+/* HEADER */
+
+.project-info-header {
+  min-height: 90px;
+
+  padding:
+    22px
+    24px;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 18px;
+
+  border-bottom:
+    1px solid
+    #1f2937;
+}
+
+.project-info-kicker {
+  color:
+    #38bdf8;
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.2em;
+}
+
+.project-info-header h2 {
+  margin:
+    7px
+    0
+    0;
+
+  color:
+    #f8fafc;
+
+  font-size: 20px;
+
+  font-weight: 650;
+
+  letter-spacing: -0.025em;
+}
+
+
+/* CLOSE */
+
+.project-info-close {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    #1f2937;
+
+  border-radius: 7px;
+
+  background:
+    #0b1117;
+
+  color:
+    #64748b;
+}
+
+.project-info-close:hover {
+  border-color:
+    rgba(56, 189, 248, 0.5);
+
+  background:
+    rgba(56, 189, 248, 0.07);
+
+  color:
+    #ffffff;
+}
+
+
+/* CONTENT */
+
+.project-info-content {
+  padding:
+    18px
+    24px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.project-info-row {
+  min-height: 52px;
+
+  padding:
+    10px
+    12px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  border:
+    1px solid
+    #1f2937;
+
+  border-radius: 7px;
+
+  background:
+    rgba(3, 7, 18, 0.55);
+}
+
+.project-info-row span {
+  color:
+    #64748b;
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+}
+
+.project-info-row strong {
+  max-width: 65%;
+
+  color:
+    #cbd5e1;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  text-align: right;
+
+  line-height: 1.5;
+}
+
+.project-info-status {
+  border-color:
+    rgba(56, 189, 248, 0.16);
+
+  background:
+    rgba(56, 189, 248, 0.045);
+}
+
+.project-info-status strong {
+  color:
+    #34d399;
+}
+
+
+/* FOOTER */
+
+.project-info-footer {
+  padding:
+    17px
+    24px
+    20px;
+
+  border-top:
+    1px solid
+    #1f2937;
+
+  color:
+    #475569;
+
+  font-size: 8px;
+
+  line-height: 1.9;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+.project-info-accent {
+  color:
+    rgba(56, 189, 248, 0.65);
+}
+</file>
+
+<file path="app/layout.tsx">
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title:
+    "UNIT ECONOMICS AND BREAK-EVEN simulator  | FRED",
+  description:
+    "Real-time macroeconomic intelligence powered by FRED.",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+</file>
+
+<file path="app/page.tsx">
+"use client";
+
+import { useEffect, useState } from "react";
+import { X } from "lucide-react";
+
+import SimulatorShell from "./components/SimulatorShell";
+
+export default function Home() {
+  const [infoOpen, setInfoOpen] =
+    useState(false);
+
+  useEffect(() => {
+    if (!infoOpen) return;
+
+    const handleEscape = (
+      event: KeyboardEvent
+    ) => {
+      if (event.key === "Escape") {
+        setInfoOpen(false);
+      }
+    };
+
+    document.addEventListener(
+      "keydown",
+      handleEscape
+    );
+
+    return () => {
+      document.removeEventListener(
+        "keydown",
+        handleEscape
+      );
+    };
+  }, [infoOpen]);
+
+  return (
+    <>
+      <SimulatorShell
+        onInfo={() => setInfoOpen(true)}
+      />
+
+
+      {/* =====================================================
+          PROJECT INFORMATION MODAL
+      ===================================================== */}
+
+      {infoOpen && (
+        <div
+          className="project-info-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Project information"
+          onMouseDown={(event) => {
+            if (
+              event.target ===
+              event.currentTarget
+            ) {
+              setInfoOpen(false);
+            }
+          }}
+        >
+
+          <div className="project-info-modal">
+
+            {/* HEADER */}
+
+            <div className="project-info-header">
+
+              <div>
+
+                <div className="project-info-kicker">
+                  PROJECT SIGNATURE
+                </div>
+
+                <h2>
+                  Infocreon Internship
+                </h2>
+
+              </div>
+
+
+              <button
+                type="button"
+                aria-label="Close project information"
+                onClick={() =>
+                  setInfoOpen(false)
+                }
+                className="project-info-close"
+              >
+                <X
+                  size={18}
+                  strokeWidth={1.8}
+                />
+              </button>
+
+            </div>
+
+
+            {/* CONTENT */}
+
+            <div className="project-info-content">
+
+              <div className="project-info-row">
+
+                <span>
+                  ARCHITECT
+                </span>
+
+                <strong>
+                  Parvathy CR
+                </strong>
+
+              </div>
+
+
+              <div className="project-info-row">
+
+                <span>
+                  BATCH
+                </span>
+
+                <strong>
+                  Batch 2 Interns
+                </strong>
+
+              </div>
+
+
+              <div className="project-info-row">
+
+                <span>
+                  TECHNOLOGY STACK
+                </span>
+
+                <strong>
+                  Next.js · FastAPI · Tailwind CSS · Apache ECharts
+                </strong>
+
+              </div>
+
+
+              <div className="project-info-row project-info-status">
+
+                <span>
+                  DATA STATUS
+                </span>
+
+                <strong>
+                  SYNTHETIC DEMONSTRATION DATA
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            {/* FOOTER */}
+
+            <div className="project-info-footer">
+
+              <div>
+                Developed by: Parvathy CR
+              </div>
+
+              <div>
+                PoC ID: 6
+              </div>
+
+              <div>
+                GitHub: @parvathycr28
+              </div>
+
+              <div className="project-info-accent">
+                Infocreon Internship
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}
+    </>
+  );
+}
+</file>
+
+<file path="lib/calculations.ts">
+import {
+  Scenario,
+  SimulationResult
+} from "./types";
+
+export function calculateSimulation(
+  scenario: Scenario
+): SimulationResult {
+  const price = Math.max(0, scenario.price);
+
+  const variableCost = Math.max(
+    0,
+    scenario.variableCost
+  );
+
+  const fixedCost = Math.max(
+    0,
+    scenario.fixedCost
+  );
+
+  const units = Math.max(
+    0,
+    scenario.units
+  );
+
+  const cac = Math.max(
+    0,
+    scenario.cac
+  );
+
+  const monthlyRevenue = Math.max(
+    0,
+    scenario.monthlyRevenue
+  );
+
+  const retentionMonths = Math.max(
+    0,
+    scenario.retentionMonths
+  );
+
+  const grossMarginPercent = Math.max(
+    0,
+    Math.min(1, scenario.grossMarginPercent)
+  );
+
+  const contributionPerUnit =
+    price - variableCost;
+
+  const revenue =
+    units * price;
+
+  const variableCostTotal =
+    units * variableCost;
+
+  const contribution =
+    units * contributionPerUnit;
+
+  const contributionMarginPercent =
+    price > 0
+      ? (contributionPerUnit / price) * 100
+      : 0;
+
+  const breakEvenUnits =
+    contributionPerUnit > 0
+      ? fixedCost / contributionPerUnit
+      : null;
+
+  const breakEvenRevenue =
+    breakEvenUnits !== null
+      ? breakEvenUnits * price
+      : null;
+
+  const operatingProfit =
+    contribution - fixedCost;
+
+  const safetyUnits =
+    breakEvenUnits !== null
+      ? units - breakEvenUnits
+      : null;
+
+  const safetyMarginPercent =
+    breakEvenUnits !== null && units > 0
+      ? ((units - breakEvenUnits) / units) * 100
+      : null;
+
+  const ltv =
+    monthlyRevenue *
+    grossMarginPercent *
+    retentionMonths;
+
+  const ltvCacRatio =
+    cac > 0
+      ? ltv / cac
+      : null;
+
+  return {
+    revenue,
+
+    variableCostTotal,
+
+    contribution,
+
+    contributionPerUnit,
+
+    contributionMarginPercent,
+
+    fixedCost,
+
+    operatingProfit,
+
+    breakEvenUnits,
+
+    breakEvenRevenue,
+
+    safetyUnits,
+
+    safetyMarginPercent,
+
+    ltv,
+
+    cac,
+
+    ltvCacRatio
+  };
+}
+
+export type SensitivityResult = {
+  label: string;
+
+  key: keyof Scenario;
+
+  impact: number;
+
+  positiveDirection: boolean;
+};
+
+export function calculateSensitivity(
+  scenario: Scenario
+): SensitivityResult[] {
+  const drivers: Array<{
+    label: string;
+    key: keyof Scenario;
+  }> = [
+    {
+      label: "Price",
+      key: "price"
+    },
+    {
+      label: "Variable cost",
+      key: "variableCost"
+    },
+    {
+      label: "Fixed cost",
+      key: "fixedCost"
+    },
+    {
+      label: "CAC",
+      key: "cac"
+    },
+    {
+      label: "Retention",
+      key: "retentionMonths"
+    }
+  ];
+
+  return drivers
+    .map((driver) => {
+      const baseValue =
+        Number(scenario[driver.key]);
+
+      const increaseScenario = {
+        ...scenario,
+        [driver.key]:
+          baseValue * 1.1
+      };
+
+      const decreaseScenario = {
+        ...scenario,
+        [driver.key]:
+          baseValue * 0.9
+      };
+
+      const increaseProfit =
+        calculateSimulation(
+          increaseScenario
+        ).operatingProfit;
+
+      const decreaseProfit =
+        calculateSimulation(
+          decreaseScenario
+        ).operatingProfit;
+
+      return {
+        label: driver.label,
+
+        key: driver.key,
+
+        impact:
+          Math.abs(
+            increaseProfit -
+              decreaseProfit
+          ) / 2,
+
+        positiveDirection:
+          increaseProfit >=
+          decreaseProfit
+      };
+    })
+    .sort(
+      (a, b) =>
+        b.impact - a.impact
+    );
+}
+</file>
+
+<file path="lib/mockData.ts">
+import {
+  Cost,
+  Customer,
+  Product,
+  Scenario
+} from "./types";
+
+export const products: Product[] = [
+  {
+    product_id: "P001",
+    product_name: "Core Platform",
+    segment: "SMB",
+    price: 2500,
+    variable_cost: 850
+  },
+
+  {
+    product_id: "P002",
+    product_name: "Pro Platform",
+    segment: "Mid-Market",
+    price: 7500,
+    variable_cost: 2400
+  },
+
+  {
+    product_id: "P003",
+    product_name: "Enterprise Platform",
+    segment: "Enterprise",
+    price: 25000,
+    variable_cost: 7200
+  }
+];
+
+export const customers: Customer[] = [
+  {
+    customer_id: "C001",
+    segment: "SMB",
+    acquisition_channel: "Paid Search",
+    cac: 780,
+    monthly_revenue: 2500,
+    retention_months: 18
+  },
+
+  {
+    customer_id: "C002",
+    segment: "SMB",
+    acquisition_channel: "Partner",
+    cac: 520,
+    monthly_revenue: 2500,
+    retention_months: 27
+  },
+
+  {
+    customer_id: "C003",
+    segment: "Mid-Market",
+    acquisition_channel: "Outbound",
+    cac: 1850,
+    monthly_revenue: 7500,
+    retention_months: 31
+  },
+
+  {
+    customer_id: "C004",
+    segment: "Enterprise",
+    acquisition_channel: "Enterprise Partner",
+    cac: 6200,
+    monthly_revenue: 25000,
+    retention_months: 42
+  }
+];
+
+export const costs: Cost[] = [
+  {
+    cost_id: "FC001",
+    cost_category: "People",
+    cost_name: "Engineering",
+    monthly_amount: 2200000,
+    type: "fixed"
+  },
+
+  {
+    cost_id: "FC002",
+    cost_category: "People",
+    cost_name: "Sales",
+    monthly_amount: 900000,
+    type: "fixed"
+  },
+
+  {
+    cost_id: "FC003",
+    cost_category: "Infrastructure",
+    cost_name: "Cloud",
+    monthly_amount: 480000,
+    type: "variable"
+  },
+
+  {
+    cost_id: "FC004",
+    cost_category: "Operations",
+    cost_name: "Support",
+    monthly_amount: 1100000,
+    type: "fixed"
+  }
+];
+
+export const defaultScenario: Scenario = {
+  product: "Core Platform",
+
+  price: 2500,
+
+  variableCost: 850,
+
+  fixedCost: 4200000,
+
+  units: 18200,
+
+  cac: 780,
+
+  monthlyRevenue: 2500,
+
+  grossMarginPercent: 0.66,
+
+  retentionMonths: 24
+};
+</file>
+
+<file path="lib/types.ts">
+export type Product = {
+  product_id: string;
+  product_name: string;
+  segment: string;
+  price: number;
+  variable_cost: number;
+};
+export type FredSeriesId =
+  | "DGS10"
+  | "DFF"
+  | "CPIAUCSL"
+  | "UNRATE"
+  | "GDPC1";
+
+export type FredObservation = {
+  date: string;
+  value: number;
+};
+
+export type FredSeries = {
+  id: FredSeriesId;
+  title: string;
+  unit: string;
+  latest: number | null;
+  previous: number | null;
+  observations: FredObservation[];
+};
+
+export type FredDashboardData = {
+  treasury10y: FredSeries;
+  fedFunds: FredSeries;
+  cpi: FredSeries;
+  unemployment: FredSeries;
+  realGdp: FredSeries;
+  fetchedAt: string;
+};
+export type Customer = {
+  customer_id: string;
+  segment: string;
+  acquisition_channel: string;
+  cac: number;
+  monthly_revenue: number;
+  retention_months: number;
+};
+
+export type Cost = {
+  cost_id: string;
+  cost_category: string;
+  cost_name: string;
+  monthly_amount: number;
+  type: "fixed" | "variable";
+};
+
+export type Scenario = {
+  product: string;
+
+  price: number;
+
+  variableCost: number;
+
+  fixedCost: number;
+
+  units: number;
+
+  cac: number;
+
+  monthlyRevenue: number;
+
+  grossMarginPercent: number;
+
+  retentionMonths: number;
+};
+
+export type SimulationResult = {
+  revenue: number;
+
+  variableCostTotal: number;
+
+  contribution: number;
+
+  contributionPerUnit: number;
+
+  contributionMarginPercent: number;
+
+  fixedCost: number;
+
+  operatingProfit: number;
+
+  breakEvenUnits: number | null;
+
+  breakEvenRevenue: number | null;
+
+  safetyUnits: number | null;
+
+  safetyMarginPercent: number | null;
+
+  ltv: number;
+
+  cac: number;
+
+  ltvCacRatio: number | null;
+};
+
+export type IntelligenceType =
+  | "waterfall"
+  | "breakEven"
+  | "cacLtv"
+  | "sensitivity"
+  | null;
+</file>
+
+<file path="global.d.ts">
+declare module "*.css";
+declare module "*.scss";
+</file>
+
+<file path="next-env.d.ts">
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/building-your-application/configuring/typescript for more information.
+</file>
+
+<file path="package.json">
+{
+  "name": "unit-economics-simulator",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "echarts": "^5.5.1",
+    "echarts-for-react": "^3.0.2",
+    "lucide-react": "^0.468.0",
+    "next": "^14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.10",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.16",
+    "typescript": "^5.7.2"
+  }
+}
+</file>
+
+<file path="tailwind.config.ts">
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+
+  theme: {
+    extend: {
+      colors: {
+        obsidian: "#030712",
+
+        surface: "#0B1117",
+
+        surface2: "#0F1720",
+
+        cyan: "#38BDF8",
+
+        indigo: "#818CF8",
+
+        borderTerminal: "#1F2937",
+
+        mint: "#34D399",
+
+        amber: "#FBBF24",
+
+        rose: "#FB7185",
+
+        primaryText: "#F8FAFC",
+
+        secondaryText: "#94A3B8",
+      },
+
+      boxShadow: {
+        cyanGlow:
+          "0 0 24px rgba(56,189,248,.12)",
+
+        terminal:
+          "0 20px 60px rgba(0,0,0,.35)",
+      },
+    },
+  },
+
+  plugins: [],
+};
+
+export default config;
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "noUncheckedSideEffectImports": false,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "global.d.ts",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.mts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
+</file>
+
+</files>

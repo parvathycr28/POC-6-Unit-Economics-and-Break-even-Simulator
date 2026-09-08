@@ -1,0 +1,4 @@
+product_id,product_name,segment,price,variable_cost
+P001,Core Platform,SMB,2500,850
+P002,Pro Platform,Mid-Market,7500,2400
+P003,Enterprise Platform,Enterprise,25000,7200

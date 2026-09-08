@@ -1,0 +1,5 @@
+customer_id,segment,acquisition_channel,cac,monthly_revenue,retention_months
+C001,SMB,Paid Search,780,2500,18
+C002,SMB,Partner,520,2500,27
+C003,Mid-Market,Outbound,1850,7500,31
+C004,Enterprise,Enterprise Partner,6200,25000,42
