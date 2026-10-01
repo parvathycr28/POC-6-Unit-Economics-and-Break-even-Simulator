@@ -76,96 +76,89 @@ This section contains the contents of the repository's files.
 "use client";
 
 import dynamic from "next/dynamic";
-
 import { SimulationResult } from "@/lib/types";
 
-const ReactECharts =
-  dynamic(
-    () =>
-      import(
-        "echarts-for-react"
-      ),
-    {
-      ssr: false
-    }
-  );
+const ReactECharts = dynamic(
+  () => import("echarts-for-react"),
+  {
+    ssr: false,
+  }
+);
 
 export default function BreakEvenChart({
   simulation,
   units,
-  onClick
+  onClick,
 }: {
   simulation: SimulationResult;
   units: number;
   onClick: () => void;
 }) {
-  const maxUnits =
-    Math.max(
-      units * 1.8,
-      simulation.breakEvenUnits
-        ? simulation.breakEvenUnits *
-            1.4
-        : units * 1.8
-    );
+  const maxUnits = Math.max(
+    units * 1.8,
+    simulation.breakEvenUnits
+      ? simulation.breakEvenUnits * 1.4
+      : units * 1.8
+  );
 
-  const points =
-    Array.from(
-      {
-        length: 12
-      },
-      (_, index) =>
-        Math.round(
-          (maxUnits / 11) *
-            index
-        )
-    );
+  const points = Array.from(
+    { length: 12 },
+    (_, index) =>
+      Math.round((maxUnits / 11) * index)
+  );
 
   const option = {
     backgroundColor: "transparent",
 
     grid: {
-      left: 48,
-      right: 18,
+      left: 55,
+      right: 20,
       top: 20,
-      bottom: 35
+      bottom: 40,
     },
 
     tooltip: {
-      trigger: "axis"
+      trigger: "axis",
     },
 
     xAxis: {
       type: "value",
 
       axisLabel: {
-        color: "#6f6b7e",
-        fontSize: 9
+        color: "#64748B",
+        fontSize: 10,
       },
 
       axisLine: {
         lineStyle: {
-          color: "rgba(255,255,255,.06)"
-        }
+          color: "#334155",
+        },
       },
 
       splitLine: {
-        show: false
-      }
+        show: false,
+      },
     },
 
     yAxis: {
       type: "value",
 
       axisLabel: {
-        color: "#6f6b7e",
-        fontSize: 9
+        color: "#64748B",
+        fontSize: 10,
+      },
+
+      axisLine: {
+        lineStyle: {
+          color: "#334155",
+        },
       },
 
       splitLine: {
         lineStyle: {
-          color: "rgba(255,255,255,.05)"
-        }
-      }
+          color: "rgba(255,255,255,0.05)",
+        },
+      },
     },
 
     series: [
@@ -178,18 +171,16 @@ export default function BreakEvenChart({
 
         symbol: "none",
 
-        data: points.map(
-          (volume) => [
-            volume,
-            volume *
-              simulation.contributionPerUnit
-          ]
-        ),
+        data: points.map((volume) => [
+          volume,
+          volume *
+            simulation.contributionPerUnit,
+        ]),
 
         lineStyle: {
-          color: "#38BDF8",
-          width: 2
-        }
+          color: "#22D3EE",
+          width: 2,
+        },
       },
 
       {
@@ -199,18 +190,16 @@ export default function BreakEvenChart({
 
         symbol: "none",
 
-        data: points.map(
-          (volume) => [
-            volume,
-            simulation.fixedCost
-          ]
-        ),
+        data: points.map((volume) => [
+          volume,
+          simulation.fixedCost,
+        ]),
 
         lineStyle: {
           color: "#FBBF24",
           width: 1,
-          type: "dashed"
-        }
+          type: "dashed",
+        },
       },
 
       ...(simulation.breakEvenUnits
@@ -223,64 +212,47 @@ export default function BreakEvenChart({
               data: [
                 [
                   simulation.breakEvenUnits,
-                  simulation.fixedCost
-                ]
+                  simulation.fixedCost,
+                ],
               ],
 
               symbolSize: 10,
 
               itemStyle: {
-                color: "#34D399"
-              }
-            }
+                color: "#34D399",
+              },
+            },
           ]
-        : [])
-    ]
+        : []),
+    ],
   };
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="
-        group
-        flex
-        min-h-[300px]
-        flex-col
-        rounded-2xl
-        border
-        border-white/8
-        bg-black/15
-        p-4
-        text-left
-        transition
-        hover:border-violet/30
-        hover:bg-white/[0.025]
-      "
+      className="dashboard-panel chart-panel"
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="text-[9px] tracking-[0.2em] text-violet/80">
-            02 · ABSORPTION
-          </div>
+      <div className="panel-top-line" />
 
-          <div className="mt-1 text-sm font-semibold">
-            Break-even curve
-          </div>
-        </div>
+      <div className="chart-section-kicker">
+  02 · ABSORPTION
+</div>
 
-        <div className="text-[8px] uppercase tracking-wider text-slate-700 transition group-hover:text-violet/70">
-          Intelligence
-        </div>
-      </div>
+<div className="chart-section-title">
+  Break-even curve
+</div>
+      <div className="chart-intelligence">
+  Intelligence
+</div>
 
-      <div className="min-h-0 flex-1">
+      <div className="chart-container">
         <ReactECharts
           option={option}
           style={{
             width: "100%",
             height: "100%",
-            minHeight: 230
+            minHeight: 280,
           }}
         />
       </div>
@@ -483,54 +455,38 @@ export default function CacLtvScatter({
     ]
   };
 
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="
-        group
-        flex
-        min-h-[300px]
-        flex-col
-        rounded-2xl
-        border
-        border-white/8
-        bg-black/15
-        p-4
-        text-left
-        transition
-        hover:border-violet/30
-        hover:bg-white/[0.025]
-      "
-    >
-      <div className="flex items-start justify-between">
-        <div>
-          <div className="text-[9px] tracking-[0.2em] text-violet/80">
-            03 · CUSTOMER ECONOMICS
-          </div>
+return (
+  <button
+    type="button"
+    onClick={onClick}
+    className="dashboard-panel chart-panel"
+  >
+    <div className="panel-top-line" />
 
-          <div className="mt-1 text-sm font-semibold">
-            CAC / LTV scatter
-          </div>
-        </div>
+    <div className="chart-section-kicker">
+  03 · CUSTOMER ECONOMICS
+</div>
 
-        <div className="text-[8px] uppercase tracking-wider text-slate-700 transition group-hover:text-violet/70">
-          Intelligence
-        </div>
-      </div>
+<div className="chart-section-title">
+  CAC / LTV scatter
+</div>
 
-      <div className="min-h-0 flex-1">
-        <ReactECharts
-          option={option}
-          style={{
-            width: "100%",
-            height: "100%",
-            minHeight: 230
-          }}
-        />
-      </div>
-    </button>
-  );
+    <div className="chart-intelligence">
+  Intelligence
+</div>
+
+    <div className="chart-container">
+      <ReactECharts
+        option={option}
+        style={{
+          width: "100%",
+          height: "100%",
+          minHeight: 260,
+        }}
+      />
+    </div>
+  </button>
+);
 }
 </file>
 
@@ -558,271 +514,118 @@ export default function ContributionWaterfall({
       number: "01",
       label: "Revenue",
       value: simulation.revenue,
-      positive: true,
+      color: "#34D399",
     },
     {
       number: "02",
       label: "Variable cost",
       value: simulation.variableCostTotal,
-      positive: false,
+      color: "#FBBF24",
     },
     {
       number: "03",
       label: "Contribution",
       value: simulation.contribution,
-      positive: simulation.contribution >= 0,
+      color: "#FB923C",
     },
     {
       number: "04",
       label: "Fixed cost",
       value: simulation.fixedCost,
-      positive: false,
+      color: "#FB7185",
     },
     {
       number: "05",
       label: "Operating profit",
       value: Math.abs(simulation.operatingProfit),
-      positive: simulation.operatingProfit >= 0,
+      color: "#818CF8",
     },
   ];
-
-  const maxValue = Math.max(
-    ...rows.map((row) => Math.abs(row.value)),
-    1
-  );
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="
-        group
-        relative
-        flex
-        min-h-[350px]
-        w-full
-        flex-col
-        overflow-hidden
-        rounded-xl
-        border
-        border-[#1F2937]
-        bg-[#0B1117]
-        p-5
-        text-left
-        transition-all
-        duration-300
-        hover:border-[#38BDF8]/50
-      "
+      className="margin-panel group"
     >
       {/* TOP ACCENT */}
-      <div
-        className="
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-          bg-[#38BDF8]/50
-        "
-      />
+      <div className="margin-panel-accent" />
 
       {/* HEADER */}
-      <div className="flex items-start justify-between">
+      <div className="margin-panel-header">
+
         <div>
-          <div
-            className="
-              text-[11px]
-              font-medium
-              uppercase
-              tracking-[0.18em]
-              text-[#38BDF8]
-            "
-          >
+          <div className="margin-panel-kicker">
             01 · MARGIN
           </div>
 
-          <div
-            className="
-              mt-1
-              text-[17px]
-              font-semibold
-              text-white
-            "
-          >
+          <div className="margin-panel-title">
             Contribution waterfall
+          </div>
+
+          <div className="margin-panel-intelligence">
+            Intelligence
           </div>
         </div>
 
-        <div
-          className="
-            rounded-md
-            border
-            border-[#1F2937]
-            bg-[#030712]
-            px-2
-            py-1
-            text-[9px]
-            uppercase
-            tracking-[0.15em]
-            text-slate-500
-            group-hover:text-[#38BDF8]
-          "
-        >
-          Intelligence
-        </div>
       </div>
 
       {/* DIVIDER */}
-      <div className="my-4 h-px bg-[#1F2937]" />
+      <div className="margin-panel-divider" />
 
-      {/* ECONOMICS */}
-      <div className="flex flex-1 flex-col justify-between">
-        {rows.map((row) => {
-          const percentage = Math.max(
-            8,
-            (Math.abs(row.value) / maxValue) * 100
-          );
+      {/* ROWS */}
+      <div className="margin-rows">
 
-          return (
-            <div
-              key={row.label}
-              className="
-                border-b
-                border-[#1F2937]/70
-                py-2.5
-                last:border-b-0
-              "
-            >
-              {/* HORIZONTAL ROW */}
-              <div
-                className="
-                  flex
-                  w-full
-                  items-center
-                  justify-between
-                  gap-4
-                "
-              >
-                {/* LEFT */}
-                <div className="flex min-w-0 items-center gap-3">
-                  <span
-                    className="
-                      flex
-                      h-7
-                      w-7
-                      shrink-0
-                      items-center
-                      justify-center
-                      rounded-md
-                      border
-                      border-[#1F2937]
-                      bg-[#030712]
-                      text-[9px]
-                      font-semibold
-                      text-[#38BDF8]
-                    "
-                  >
-                    {row.number}
-                  </span>
+        {rows.map((row) => (
+          <div
+            key={row.label}
+            className="margin-row"
+          >
 
-                  <span
-                    className="
-                      whitespace-nowrap
-                      text-[13px]
-                      font-medium
-                      text-slate-300
-                    "
-                  >
-                    {row.label}
-                  </span>
-                </div>
-
-                {/* RIGHT VALUE */}
-                <span
-                  className={`
-                    shrink-0
-                    whitespace-nowrap
-                    text-right
-                    text-[15px]
-                    font-semibold
-                    tracking-tight
-                    ${
-                      row.positive
-                        ? "text-[#38BDF8]"
-                        : "text-slate-300"
-                    }
-                  `}
-                >
-                  {!row.positive && "−"}₹{money(row.value)}
-                </span>
-              </div>
-
-              {/* BAR */}
-              <div
-                className="
-                  ml-10
-                  mt-2
-                  h-1
-                  overflow-hidden
-                  rounded-full
-                  bg-[#030712]
-                "
-              >
-                <div
-                  className={`
-                    h-full
-                    rounded-full
-                    ${
-                      row.positive
-                        ? "bg-[#38BDF8]"
-                        : "bg-slate-600"
-                    }
-                  `}
-                  style={{
-                    width: `${percentage}%`,
-                    opacity: row.positive ? 0.75 : 0.45,
-                  }}
-                />
-              </div>
+            {/* NUMBER */}
+            <div className="margin-number">
+              {row.number}
             </div>
-          );
-        })}
+
+            {/* LABEL */}
+            <div className="margin-label">
+              {row.label}
+            </div>
+
+            {/* VALUE */}
+            <div
+              className="margin-value"
+              style={{
+                color: row.color,
+              }}
+            >
+              {row.number !== "01" &&
+                row.number !== "03" &&
+                row.number !== "05"
+                ? "−"
+                : ""}
+
+              ₹{money(row.value)}
+            </div>
+
+          </div>
+        ))}
+
       </div>
 
       {/* FOOTER */}
-      <div
-        className="
-          mt-3
-          flex
-          items-center
-          justify-between
-          border-t
-          border-[#1F2937]
-          pt-3
-        "
-      >
-        <span
-          className="
-            text-[9px]
-            uppercase
-            tracking-[0.15em]
-            text-slate-600
-          "
-        >
+      <div className="margin-footer">
+
+        <span>
           Monthly economics
         </span>
 
-        <span
-          className="
-            text-[9px]
-            uppercase
-            tracking-[0.15em]
-            text-[#38BDF8]/70
-          "
-        >
+        <span>
           Live scenario
         </span>
+
       </div>
+
     </button>
   );
 }
@@ -830,36 +633,7 @@ export default function ContributionWaterfall({
 
 <file path="app/components/DeveloperSignature.tsx">
 export default function DeveloperSignature() {
-  return (
-    <div
-      className="
-        pointer-events-none
-        absolute
-        bottom-5
-        right-6
-        z-30
-        hidden
-        text-right
-        md:block
-      "
-    >
-      <div className="text-[8px] uppercase tracking-[0.18em] text-slate-700">
-        Developed by: Parvathy CR
-      </div>
-
-      <div className="mt-1 text-[8px] uppercase tracking-[0.18em] text-slate-700">
-        PoC ID: 6
-      </div>
-
-      <div className="mt-1 text-[8px] uppercase tracking-[0.18em] text-slate-700">
-        GitHub: @parvathycr28
-      </div>
-
-      <div className="mt-1 text-[8px] uppercase tracking-[0.18em] text-violet/50">
-        Infocreon Internship
-      </div>
-    </div>
-  );
+  return null;
 }
 </file>
 
@@ -1019,92 +793,87 @@ export default function FredChart({
 <file path="app/components/FredMetricCards.tsx">
 "use client";
 
-import { FredSeries } from "@/lib/types";
+import { SimulationResult } from "@/lib/types";
 
-function formatValue(
-  series: FredSeries
-) {
-  if (series.latest === null) {
-    return "—";
-  }
-
-  if (series.id === "CPIAUCSL") {
-    return series.latest.toFixed(1);
-  }
-
-  return `${series.latest.toFixed(2)}%`;
+function compactMoney(value: number): string {
+  return new Intl.NumberFormat("en-IN", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
 }
 
 function Metric({
   label,
   value,
   description,
+  valueColor,
 }: {
   label: string;
   value: string;
   description: string;
+  valueColor: string;
 }) {
   return (
-    <div className="terminal-card p-4">
-      <div className="terminal-kicker">
+    <div className="metric-card">
+      <div className="metric-label">
         {label}
       </div>
 
-      <div className="mt-2 text-2xl font-semibold tracking-tight text-white">
+      <div className={`metric-value ${valueColor}`}>
         {value}
       </div>
 
-      <div className="mt-1 text-[10px] text-slate-500">
+      <div className="metric-description">
         {description}
       </div>
     </div>
   );
 }
 
-export default function FredMetricCards({
-  treasury10y,
-  fedFunds,
-  cpi,
-  unemployment,
-  realGdp,
+export default function MetricCards({
+  simulation,
 }: {
-  treasury10y: FredSeries;
-  fedFunds: FredSeries;
-  cpi: FredSeries;
-  unemployment: FredSeries;
-  realGdp: FredSeries;
+  simulation: SimulationResult;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+    <div className="metrics-grid">
+
       <Metric
-        label="10Y TREASURY"
-        value={formatValue(treasury10y)}
-        description="DGS10 · FRED"
+        label="Operating profit"
+        value={`₹${compactMoney(simulation.operatingProfit)}`}
+        description="monthly scenario"
+        valueColor="metric-green"
       />
 
       <Metric
-        label="FED FUNDS"
-        value={formatValue(fedFunds)}
-        description="DFF · FRED"
+        label="Contribution margin"
+        value={`${simulation.contributionMarginPercent.toFixed(1)}%`}
+        description="per-unit economics"
+        valueColor="metric-yellow"
       />
 
       <Metric
-        label="CPI INDEX"
-        value={formatValue(cpi)}
-        description="CPIAUCSL · FRED"
+        label="Break-even"
+        value={
+          simulation.breakEvenUnits !== null
+            ? Math.ceil(simulation.breakEvenUnits).toLocaleString("en-IN")
+            : "N/A"
+        }
+        description="units / month"
+        valueColor="metric-orange"
       />
 
       <Metric
-        label="UNEMPLOYMENT"
-        value={formatValue(unemployment)}
-        description="UNRATE · FRED"
+        label="LTV : CAC"
+        value={
+          simulation.ltvCacRatio !== null
+            ? `${simulation.ltvCacRatio.toFixed(1)}×`
+            : "N/A"
+        }
+        description="customer economics"
+        valueColor="metric-red"
       />
 
-      <Metric
-        label="REAL GDP"
-        value={formatValue(realGdp)}
-        description="GDPC1 · FRED"
-      />
     </div>
   );
 }
@@ -1113,7 +882,12 @@ export default function FredMetricCards({
 <file path="app/components/Header.tsx">
 "use client";
 
-import { Info } from "lucide-react";
+import {
+  Info,
+  Play,
+  Share2,
+  Upload,
+} from "lucide-react";
 
 type HeaderProps = {
   onInfo: () => void;
@@ -1123,58 +897,54 @@ export default function Header({
   onInfo,
 }: HeaderProps) {
   return (
-    <header
-      className="
-        pointer-events-none
-        absolute
-        left-0
-        right-0
-        top-0
-        z-50
-        flex
-        items-start
-        justify-between
-        px-5
-        py-5
-        md:px-8
-        md:py-7
-      "
-    >
-      <div>
-        <div className="text-[9px] font-semibold tracking-[0.35em] text-violet">
-          INFOCREON INTERNSHIP
+    <header className="top-header">
+
+      <div className="brand-area">
+
+        <div className="brand-icon">
+          ✳
         </div>
 
-        <h1 className="mt-2 text-xs font-medium tracking-[0.18em] text-white md:text-sm">
-          UNIT ECONOMICS &amp; BREAK-EVEN SIMULATOR
-        </h1>
+        <div>
+          <div className="brand-title">
+            InfoCreon Intership
+          </div>
 
-        <div className="mt-1 text-[8px] tracking-[0.28em] text-slate-600">
-          FINANCE &amp; CASH · SCENARIO INTELLIGENCE
+          <div className="brand-subtitle">
+            UNIT ECONOMICS &amp; BREAK-EVEN SIMULATOR
+          </div>
         </div>
+
       </div>
 
-      <button
-        type="button"
-        aria-label="Open project information"
-        onClick={onInfo}
-        className="
-          pointer-events-auto
-          rounded-full
-          border
-          border-white/10
-          bg-black/20
-          p-2.5
-          text-slate-400
-          backdrop-blur-md
-          transition
-          hover:border-violet/40
-          hover:bg-violet/10
-          hover:text-white
-        "
-      >
-        <Info size={16} strokeWidth={1.8} />
-      </button>
+      <div className="header-actions">
+
+        <button className="header-button">
+          <Share2 size={15} />
+          Share
+        </button>
+
+        <button className="header-button">
+          <Upload size={15} />
+          Export
+        </button>
+
+        <button className="run-button">
+          <Play size={14} fill="currentColor" />
+          Run simulation
+        </button>
+
+        <button
+          type="button"
+          onClick={onInfo}
+          aria-label="Open information"
+          className="profile-button"
+        >
+          <Info size={17} />
+        </button>
+
+      </div>
+
     </header>
   );
 }
@@ -1670,82 +1440,32 @@ function Metric({
   label,
   value,
   description,
-  valueColor,
+  valueClass,
 }: {
   label: string;
   value: string;
   description: string;
-  valueColor: string;
+  valueClass: string;
 }) {
   return (
-    <div
-      className="
-        group
-        relative
-        flex
-        min-h-[116px]
-        flex-col
-        justify-between
-        overflow-hidden
-        rounded-xl
-        border
-        border-[#1F2937]
-        bg-[#0B1117]
-        p-4
-        transition-all
-        duration-200
-        hover:border-[#38BDF8]/40
-      "
-    >
-      <div
-        className="
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-          bg-[#38BDF8]/40
-        "
-      />
+    <div className="metric-card">
 
-      {/* LABEL */}
-      <div
-        className="
-          text-[10px]
-          font-medium
-          uppercase
-          tracking-[0.18em]
-          text-[#38BDF8]
-        "
-      >
+      <div className="metric-accent" />
+
+      <div className="metric-label">
         {label}
       </div>
 
-      {/* VALUE */}
       <div
-        className={`
-          mt-2
-          text-2xl
-          font-semibold
-          tracking-tight
-          ${valueColor}
-        `}
+        className={`metric-value ${valueClass}`}
       >
         {value}
       </div>
 
-      {/* DESCRIPTION */}
-      <div
-        className="
-          mt-1
-          text-[9px]
-          uppercase
-          tracking-[0.08em]
-          text-slate-500
-        "
-      >
+      <div className="metric-description">
         {description}
       </div>
+
     </div>
   );
 }
@@ -1756,56 +1476,67 @@ export default function MetricCards({
   simulation: SimulationResult;
 }) {
   return (
-    <div
-      className="
-        grid
-        grid-cols-1
-        gap-3
-        sm:grid-cols-2
-        xl:grid-cols-4
-      "
-    >
-      {/* OPERATING PROFIT */}
+    <div className="metrics-grid">
+
+
+      {/* 01 OPERATING PROFIT */}
+
       <Metric
         label="Operating profit"
-        value={`₹${compactMoney(simulation.operatingProfit)}`}
+        value={`₹${compactMoney(
+          simulation.operatingProfit
+        )}`}
         description="monthly scenario"
-        valueColor="text-[#34D399]"
+        valueClass="metric-green"
       />
 
-      {/* CONTRIBUTION MARGIN */}
+
+      {/* 02 CONTRIBUTION MARGIN */}
+
       <Metric
         label="Contribution margin"
-        value={`${simulation.contributionMarginPercent.toFixed(1)}%`}
+        value={`${simulation.contributionMarginPercent.toFixed(
+          1
+        )}%`}
         description="per-unit economics"
-        valueColor="text-[#FBBF24]"
+        valueClass="metric-yellow"
       />
 
-      {/* BREAK-EVEN */}
+
+      {/* 03 BREAK-EVEN */}
+
       <Metric
         label="Break-even"
         value={
           simulation.breakEvenUnits !== null
-            ? simulation.breakEvenUnits.toLocaleString("en-IN", {
-                maximumFractionDigits: 0,
-              })
+            ? simulation.breakEvenUnits.toLocaleString(
+                "en-IN",
+                {
+                  maximumFractionDigits: 0,
+                }
+              )
             : "N/A"
         }
         description="units / month"
-        valueColor="text-[#FB923C]"
+        valueClass="metric-orange"
       />
 
-      {/* LTV : CAC */}
+
+      {/* 04 LTV : CAC */}
+
       <Metric
         label="LTV : CAC"
         value={
           simulation.ltvCacRatio !== null
-            ? `${simulation.ltvCacRatio.toFixed(1)}×`
+            ? `${simulation.ltvCacRatio.toFixed(
+                1
+              )}×`
             : "N/A"
         }
         description="customer economics"
-        valueColor="text-[#818CF8]"
+        valueClass="metric-red"
       />
+
     </div>
   );
 }
@@ -1824,6 +1555,7 @@ type Props = {
   ) => void;
 };
 
+
 function Slider({
   label,
   value,
@@ -1831,7 +1563,7 @@ function Slider({
   max,
   step,
   format,
-  onChange
+  onChange,
 }: {
   label: string;
   value: number;
@@ -1839,41 +1571,23 @@ function Slider({
   max: number;
   step: number;
   format: (value: number) => string;
-  onChange: (
-    value: number
-  ) => void;
+  onChange: (value: number) => void;
 }) {
   return (
-    <label className="block">
-      <div
-        className="
-          mb-2
-          flex
-          items-center
-          justify-between
-        "
-      >
-        <span
-          className="
-            text-[9px]
-            uppercase
-            tracking-[0.16em]
-            text-slate-600
-          "
-        >
+    <label className="scenario-slider">
+
+      <div className="slider-heading">
+
+        <span>
           {label}
         </span>
 
-        <span
-          className="
-            text-xs
-            font-medium
-            text-slate-300
-          "
-        >
+        <strong>
           {format(value)}
-        </span>
+        </strong>
+
       </div>
+
 
       <input
         type="range"
@@ -1883,35 +1597,32 @@ function Slider({
         value={value}
         onChange={(event) =>
           onChange(
-            Number(
-              event.target.value
-            )
+            Number(event.target.value)
           )
         }
-        className="
-          range-control
-          h-1.5
-          w-full
-          cursor-pointer
-        "
+        className="range-control"
       />
+
     </label>
   );
 }
 
+
 export default function ScenarioControls({
   scenario,
-  onChange
+  onChange,
 }: Props) {
+
   const update = (
     key: keyof Scenario,
     value: number | string
   ) => {
     onChange({
       ...scenario,
-      [key]: value
+      [key]: value,
     });
   };
+
 
   const money = (
     value: number
@@ -1920,232 +1631,157 @@ export default function ScenarioControls({
       "en-IN"
     )}`;
 
+
   return (
-    <aside
-      className="
-        glass-panel
-        absolute
-        bottom-4
-        left-4
-        z-30
-        w-[calc(100%-2rem)]
-        max-w-sm
-        rounded-2xl
-        p-4
-        shadow-cinematic
-        md:bottom-6
-        md:left-6
-      "
-    >
-      <div
-        className="
-          mb-5
-          flex
-          items-start
-          justify-between
-        "
-      >
-        <div>
-          <div
-            className="
-              text-[9px]
-              tracking-[0.25em]
-              text-violet
-            "
-          >
-            SCENARIO LAB
-          </div>
+    <div className="scenario-controls">
 
-          <div
-            className="
-              mt-1
-              text-sm
-              font-semibold
-            "
-          >
-            Move the economics
-          </div>
-        </div>
 
-        <span
-          className="
-            rounded-full
-            border
-            border-violet/20
-            bg-violet/5
-            px-2
-            py-1
-            text-[8px]
-            uppercase
-            tracking-wider
-            text-violet
-          "
-        >
-          Synthetic
+      {/* PRODUCT */}
+
+      <label className="product-control">
+
+        <span className="control-label">
+          Product
         </span>
-      </div>
 
-      <div className="space-y-4">
-        <label className="block">
-          <div
-            className="
-              mb-2
-              text-[9px]
-              uppercase
-              tracking-[0.16em]
-              text-slate-600
-            "
-          >
-            Product
-          </div>
-
-          <select
-            value={
-              scenario.product
-            }
-            onChange={(event) =>
-              update(
-                "product",
-                event.target.value
-              )
-            }
-            className="
-              w-full
-              rounded-lg
-              border
-              border-white/10
-              bg-black/30
-              px-3
-              py-2
-              text-xs
-              text-slate-300
-              outline-none
-              focus:border-violet/50
-            "
-          >
-            <option>
-              Core Platform
-            </option>
-
-            <option>
-              Pro Platform
-            </option>
-
-            <option>
-              Enterprise Platform
-            </option>
-          </select>
-        </label>
-
-        <Slider
-          label="Price / unit"
-          value={
-            scenario.price
-          }
-          min={500}
-          max={30000}
-          step={100}
-          format={money}
-          onChange={(value) =>
+        <select
+          value={scenario.product}
+          onChange={(event) =>
             update(
-              "price",
-              value
+              "product",
+              event.target.value
             )
           }
-        />
+        >
 
-        <Slider
-          label="Variable cost / unit"
-          value={
-            scenario.variableCost
-          }
-          min={100}
-          max={15000}
-          step={50}
-          format={money}
-          onChange={(value) =>
-            update(
-              "variableCost",
-              value
-            )
-          }
-        />
+          <option>
+            Core Platform
+          </option>
 
-        <Slider
-          label="Monthly fixed cost"
-          value={
-            scenario.fixedCost
-          }
-          min={500000}
-          max={10000000}
-          step={100000}
-          format={money}
-          onChange={(value) =>
-            update(
-              "fixedCost",
-              value
-            )
-          }
-        />
+          <option>
+            Pro Platform
+          </option>
 
-        <Slider
-          label="Monthly volume"
-          value={
-            scenario.units
-          }
-          min={1000}
-          max={50000}
-          step={100}
-          format={(value) =>
-            value.toLocaleString(
-              "en-IN"
-            )
-          }
-          onChange={(value) =>
-            update(
-              "units",
-              value
-            )
-          }
-        />
+          <option>
+            Enterprise Platform
+          </option>
 
-        <Slider
-          label="CAC"
-          value={
-            scenario.cac
-          }
-          min={100}
-          max={10000}
-          step={50}
-          format={money}
-          onChange={(value) =>
-            update(
-              "cac",
-              value
-            )
-          }
-        />
+        </select>
 
-        <Slider
-          label="Retention"
-          value={
-            scenario.retentionMonths
-          }
-          min={3}
-          max={60}
-          step={1}
-          format={(value) =>
-            `${value} mo`
-          }
-          onChange={(value) =>
-            update(
-              "retentionMonths",
-              value
-            )
-          }
-        />
-      </div>
-    </aside>
+      </label>
+
+
+      {/* PRICE */}
+
+      <Slider
+        label="Price / unit"
+        value={scenario.price}
+        min={500}
+        max={30000}
+        step={100}
+        format={money}
+        onChange={(value) =>
+          update("price", value)
+        }
+      />
+
+
+      {/* VARIABLE COST */}
+
+      <Slider
+        label="Variable cost / unit"
+        value={scenario.variableCost}
+        min={100}
+        max={15000}
+        step={50}
+        format={money}
+        onChange={(value) =>
+          update(
+            "variableCost",
+            value
+          )
+        }
+      />
+
+
+      {/* FIXED COST */}
+
+      <Slider
+        label="Monthly fixed cost"
+        value={scenario.fixedCost}
+        min={500000}
+        max={10000000}
+        step={100000}
+        format={money}
+        onChange={(value) =>
+          update(
+            "fixedCost",
+            value
+          )
+        }
+      />
+
+
+      {/* VOLUME */}
+
+      <Slider
+        label="Monthly volume"
+        value={scenario.units}
+        min={1000}
+        max={50000}
+        step={100}
+        format={(value) =>
+          value.toLocaleString(
+            "en-IN"
+          )
+        }
+        onChange={(value) =>
+          update(
+            "units",
+            value
+          )
+        }
+      />
+
+
+      {/* CAC */}
+
+      <Slider
+        label="CAC"
+        value={scenario.cac}
+        min={100}
+        max={10000}
+        step={50}
+        format={money}
+        onChange={(value) =>
+          update(
+            "cac",
+            value
+          )
+        }
+      />
+
+
+      {/* RETENTION */}
+
+      <Slider
+        label="Retention"
+        value={scenario.retentionMonths}
+        min={3}
+        max={60}
+        step={1}
+        format={(value) =>
+          `${value} mo`
+        }
+        onChange={(value) =>
+          update(
+            "retentionMonths",
+            value
+          )
+        }
+      />
+
+    </div>
   );
 }
 </file>
@@ -2159,7 +1795,7 @@ function money(value: number): string {
   return new Intl.NumberFormat("en-IN", {
     notation: "compact",
     maximumFractionDigits: 1,
-  }).format(value);
+  }).format(Math.abs(value));
 }
 
 export default function SensitivityTornado({
@@ -2171,266 +1807,236 @@ export default function SensitivityTornado({
   simulation: SimulationResult;
   onClick: () => void;
 }) {
+  /*
+   * Sensitivity is expressed as the change in operating
+   * profit when each driver is stressed by +10%.
+   *
+   * These are kept separate from the main simulation so
+   * the existing calculation engine is untouched.
+   */
+
+  const priceImpact =
+    scenario.units *
+    scenario.price *
+    0.10;
+
+  const variableCostImpact =
+    scenario.units *
+    scenario.variableCost *
+    0.10;
+
+  const fixedCostImpact =
+    scenario.fixedCost *
+    0.10;
+
+  /*
+   * CAC and retention are customer-economic drivers.
+   * They are displayed as directional risk indicators
+   * rather than altering the operating-profit calculation.
+   */
+  const cacImpact =
+    scenario.cac *
+    scenario.units *
+    0.10 *
+    0.6;
+
+  const retentionImpact =
+    simulation.ltv !== null
+      ? simulation.ltv * 0.10 * 0.25
+      : 0;
+
   const drivers = [
     {
       number: "01",
       label: "Price",
-      value: scenario.price,
-      format: `₹${money(scenario.price)}`,
+      stress: "+10%",
+      impact: priceImpact,
+      positive: true,
     },
     {
       number: "02",
       label: "Variable cost",
-      value: scenario.variableCost,
-      format: `₹${money(scenario.variableCost)}`,
+      stress: "+10%",
+      impact: variableCostImpact,
+      positive: false,
     },
     {
       number: "03",
       label: "Fixed cost",
-      value: scenario.fixedCost,
-      format: `₹${money(scenario.fixedCost)}`,
+      stress: "+10%",
+      impact: fixedCostImpact,
+      positive: false,
     },
     {
       number: "04",
       label: "CAC",
-      value: scenario.cac,
-      format: `₹${money(scenario.cac)}`,
+      stress: "+10%",
+      impact: cacImpact,
+      positive: false,
     },
     {
       number: "05",
       label: "Retention",
-      value: scenario.retentionMonths,
-      format: `${scenario.retentionMonths} mo`,
+      stress: "+10%",
+      impact: retentionImpact,
+      positive: true,
     },
   ];
+
+  const maxImpact = Math.max(
+    ...drivers.map((driver) =>
+      Math.abs(driver.impact)
+    ),
+    1
+  );
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="
-        group
-        relative
-        flex
-        min-h-[350px]
-        w-full
-        flex-col
-        overflow-hidden
-        rounded-xl
-        border
-        border-[#1F2937]
-        bg-[#0B1117]
-        p-5
-        text-left
-        transition-all
-        duration-300
-        hover:border-[#38BDF8]/50
-      "
+      className="driver-risk-panel group"
     >
+
       {/* TOP ACCENT */}
-      <div
-        className="
-          absolute
-          left-0
-          right-0
-          top-0
-          h-px
-          bg-[#38BDF8]/50
-        "
-      />
+      <div className="driver-risk-accent" />
 
       {/* HEADER */}
-      <div className="flex items-start justify-between">
+      <div className="driver-risk-header">
+
         <div>
-          <div
-            className="
-              text-[11px]
-              font-medium
-              uppercase
-              tracking-[0.18em]
-              text-[#38BDF8]
-            "
-          >
+
+          <div className="driver-risk-kicker">
             04 · DRIVER RISK
           </div>
 
-          <div
-            className="
-              mt-1
-              text-[17px]
-              font-semibold
-              text-white
-            "
-          >
+          <div className="driver-risk-title">
             Sensitivity tornado
           </div>
+
+          <div className="driver-risk-intelligence">
+            Intelligence
+          </div>
+
         </div>
 
-        <div
-          className="
-            rounded-md
-            border
-            border-[#1F2937]
-            bg-[#030712]
-            px-2
-            py-1
-            text-[9px]
-            uppercase
-            tracking-[0.15em]
-            text-slate-500
-            group-hover:text-[#38BDF8]
-          "
-        >
-          Intelligence
-        </div>
       </div>
 
+
       {/* DESCRIPTION */}
-      <div
-        className="
-          mt-4
-          rounded-lg
-          border
-          border-[#1F2937]
-          bg-[#030712]/60
-          p-3
-        "
-      >
-        <div
-          className="
-            text-[10px]
-            uppercase
-            tracking-[0.15em]
-            text-[#38BDF8]
-          "
-        >
+      <div className="driver-risk-description">
+
+        <div className="driver-risk-subtitle">
           Driver sensitivity
         </div>
 
-        <p
-          className="
-            mt-1
-            text-[11px]
-            leading-5
-            text-slate-400
-          "
-        >
+        <p>
           Relative impact on operating profit when each
           assumption moves by ±10%.
         </p>
+
       </div>
 
-      {/* DRIVER TABLE */}
-      <div className="mt-4 flex flex-1 flex-col justify-between">
-        {drivers.map((driver) => (
-          <div
-            key={driver.label}
-            className="
-              grid
-              grid-cols-[auto_1fr_auto]
-              items-center
-              gap-3
-              border-b
-              border-[#1F2937]/70
-              py-2.5
-              last:border-b-0
-            "
-          >
-            {/* NUMBER */}
-            <span
-              className="
-                flex
-                h-7
-                w-7
-                items-center
-                justify-center
-                rounded-md
-                border
-                border-[#1F2937]
-                bg-[#030712]
-                text-[9px]
-                font-semibold
-                text-[#38BDF8]
-              "
-            >
-              {driver.number}
-            </span>
 
-            {/* DRIVER NAME */}
-            <div>
-              <div
-                className="
-                  text-[12px]
-                  font-medium
-                  text-slate-300
-                "
-              >
+      {/* TABLE HEADER */}
+      <div className="driver-risk-table-header">
+
+        <span>
+          #
+        </span>
+
+        <span>
+          Driver
+        </span>
+
+        <span>
+          Stress
+        </span>
+
+        <span>
+          Impact on Op. Profit
+        </span>
+
+      </div>
+
+
+      {/* TABLE */}
+      <div className="driver-risk-table">
+
+        {drivers.map((driver) => {
+
+          const width =
+            Math.max(
+              8,
+              (Math.abs(driver.impact) /
+                maxImpact) *
+                100
+            );
+
+          return (
+            <div
+              key={driver.label}
+              className="driver-risk-row"
+            >
+
+              {/* NUMBER */}
+              <div className="driver-risk-number">
+                {driver.number}
+              </div>
+
+
+              {/* DRIVER */}
+              <div className="driver-risk-name">
                 {driver.label}
               </div>
 
-              <div
-                className="
-                  mt-0.5
-                  text-[8px]
-                  uppercase
-                  tracking-[0.12em]
-                  text-slate-600
-                "
-              >
-                ±10% stress
+
+              {/* STRESS */}
+              <div className="driver-risk-stress">
+                {driver.stress}
               </div>
-            </div>
 
-            {/* VALUE */}
-            <div
-              className="
-                text-right
-                text-[13px]
-                font-semibold
-                tracking-tight
-                text-white
-              "
-            >
-              {driver.format}
+
+              {/* IMPACT */}
+              <div className="driver-risk-impact">
+
+                <span
+                  className={
+                    driver.positive
+                      ? "driver-impact-positive"
+                      : "driver-impact-negative"
+                  }
+                >
+                  {driver.positive
+                    ? "+"
+                    : "−"}
+
+                  ₹{money(driver.impact)}
+                </span>
+
+
+                <span className="driver-risk-bar-track">
+
+                  <span
+                    className={
+                      driver.positive
+                        ? "driver-risk-bar-positive"
+                        : "driver-risk-bar-negative"
+                    }
+                    style={{
+                      width: `${width}%`,
+                    }}
+                  />
+
+                </span>
+
+              </div>
+
             </div>
-          </div>
-        ))}
+          );
+        })}
+
       </div>
 
-      {/* FOOTER */}
-      <div
-        className="
-          mt-3
-          flex
-          items-center
-          justify-between
-          border-t
-          border-[#1F2937]
-          pt-3
-        "
-      >
-        <span
-          className="
-            text-[9px]
-            uppercase
-            tracking-[0.15em]
-            text-slate-600
-          "
-        >
-          Risk intelligence
-        </span>
-
-        <span
-          className="
-            text-[9px]
-            uppercase
-            tracking-[0.15em]
-            text-[#38BDF8]/70
-          "
-        >
-          Live scenario
-        </span>
-      </div>
     </button>
   );
 }
@@ -2465,7 +2071,7 @@ import {
 export default function SimulatorShell({
   onInfo
 }: {
-  onInfo: () => void;
+  onInfo?: () => void;
 }) {
   const [scenario, setScenario] =
     useState<Scenario>(defaultScenario);
@@ -2473,10 +2079,31 @@ export default function SimulatorShell({
   const [intelligence, setIntelligence] =
     useState<IntelligenceType>(null);
 
+  /*
+   * INFO MODAL
+   *
+   * This state belongs to the dashboard itself.
+   * Therefore the INFO button works even if page.tsx
+   * does not correctly wire the old callback.
+   */
+  const [showInfo, setShowInfo] =
+    useState(false);
+
   const simulation = useMemo(
     () => calculateSimulation(scenario),
     [scenario]
   );
+
+  const openInfo = () => {
+    setShowInfo(true);
+
+    // Preserve an existing parent callback if one exists.
+    onInfo?.();
+  };
+
+  const closeInfo = () => {
+    setShowInfo(false);
+  };
 
   return (
     <main className="dashboard-shell">
@@ -2503,6 +2130,7 @@ export default function SimulatorShell({
 
         </div>
 
+
         <div className="header-actions">
 
           <div className="live-status">
@@ -2510,10 +2138,14 @@ export default function SimulatorShell({
             LIVE SIMULATION
           </div>
 
+
+          {/* INFO BUTTON */}
+
           <button
             type="button"
             className="header-info-button"
-            onClick={onInfo}
+            onClick={openInfo}
+            aria-label="Open project information"
           >
             INFO
           </button>
@@ -2547,9 +2179,12 @@ export default function SimulatorShell({
 
         </div>
 
+
         <div className="data-mode">
 
-          <span>DATA MODE</span>
+          <span>
+            DATA MODE
+          </span>
 
           <strong>
             SYNTHETIC SCENARIO
@@ -2561,7 +2196,7 @@ export default function SimulatorShell({
 
 
       {/* =====================================================
-          MAIN THREE COLUMN DASHBOARD
+          MAIN DASHBOARD
       ===================================================== */}
 
       <section className="dashboard-layout">
@@ -2593,6 +2228,7 @@ export default function SimulatorShell({
 
           </div>
 
+
           <ScenarioControls
             scenario={scenario}
             onChange={setScenario}
@@ -2623,12 +2259,18 @@ export default function SimulatorShell({
 
           <div className="analytics-grid">
 
+
+            {/* 01 — MARGIN */}
+
             <ContributionWaterfall
               simulation={simulation}
               onClick={() =>
                 setIntelligence("waterfall")
               }
             />
+
+
+            {/* 02 — ABSORPTION */}
 
             <BreakEvenChart
               simulation={simulation}
@@ -2638,12 +2280,17 @@ export default function SimulatorShell({
               }
             />
 
+
+            {/* 03 — CUSTOMER ECONOMICS */}
+
             <CacLtvScatter
-              simulation={simulation}
-              onClick={() =>
-                setIntelligence("cacLtv")
-              }
-            />
+  simulation={simulation}
+  onClick={() =>
+    setIntelligence("cacLtv")
+  }
+/>
+
+            {/* 04 — DRIVER RISK */}
 
             <SensitivityTornado
               scenario={scenario}
@@ -2656,9 +2303,12 @@ export default function SimulatorShell({
           </div>
 
 
-          {/* LOWER INFORMATION STRIP */}
+          {/* =================================================
+              LOWER INFORMATION STRIP
+          ================================================= */}
 
           <section className="decision-strip">
+
 
             <div className="decision-card">
 
@@ -2671,9 +2321,10 @@ export default function SimulatorShell({
               </h3>
 
               <p>
-                The simulator connects price, variable cost,
-                fixed cost, volume, CAC and retention into one
-                operating scenario.
+                The simulator connects price,
+                variable cost, fixed cost, volume,
+                CAC and retention into one operating
+                scenario.
               </p>
 
             </div>
@@ -2688,21 +2339,32 @@ export default function SimulatorShell({
               <div className="scenario-summary">
 
                 <div>
-                  <span>Product</span>
+                  <span>
+                    Product
+                  </span>
+
                   <strong>
                     {scenario.product}
                   </strong>
                 </div>
 
+
                 <div>
-                  <span>Volume</span>
+                  <span>
+                    Volume
+                  </span>
+
                   <strong>
                     {scenario.units.toLocaleString("en-IN")}
                   </strong>
                 </div>
 
+
                 <div>
-                  <span>Margin</span>
+                  <span>
+                    Margin
+                  </span>
+
                   <strong>
                     {simulation.contributionMarginPercent.toFixed(1)}%
                   </strong>
@@ -2723,11 +2385,15 @@ export default function SimulatorShell({
 
         <aside className="insight-sidebar">
 
+
+          {/* SCENARIO SIGNAL */}
+
           <section className="insight-card signal-card">
 
             <div className="panel-kicker">
               SCENARIO SIGNAL
             </div>
+
 
             <div className="signal-header">
 
@@ -2751,14 +2417,19 @@ export default function SimulatorShell({
 
             </div>
 
+
             <p>
+
               {simulation.operatingProfit >= 0
                 ? "Current contribution absorbs the fixed-cost base and produces positive operating profit."
                 : "Current contribution does not fully absorb the fixed-cost base."}
+
             </p>
 
           </section>
 
+
+          {/* KEY OUTPUTS */}
 
           <section className="insight-card">
 
@@ -2766,7 +2437,9 @@ export default function SimulatorShell({
               KEY OUTPUTS
             </div>
 
+
             <div className="output-list">
+
 
               <div className="output-row">
 
@@ -2797,11 +2470,13 @@ export default function SimulatorShell({
                 </span>
 
                 <strong>
+
                   {simulation.breakEvenUnits !== null
                     ? Math.ceil(
                         simulation.breakEvenUnits
                       ).toLocaleString("en-IN")
-                    : "N/A"}
+                    : "—"}
+
                 </strong>
 
               </div>
@@ -2813,17 +2488,12 @@ export default function SimulatorShell({
                   LTV : CAC
                 </span>
 
-                <strong
-                  className={
-                    simulation.ltvCacRatio !== null &&
-                    simulation.ltvCacRatio >= 3
-                      ? "positive-value"
-                      : ""
-                  }
-                >
+                <strong>
+
                   {simulation.ltvCacRatio !== null
-                    ? `${simulation.ltvCacRatio.toFixed(1)}×`
-                    : "N/A"}
+  ? `${simulation.ltvCacRatio.toFixed(1)}×`
+  : "N/A"}
+
                 </strong>
 
               </div>
@@ -2836,9 +2506,11 @@ export default function SimulatorShell({
                 </span>
 
                 <strong>
+
                   {simulation.safetyMarginPercent !== null
-                    ? `${simulation.safetyMarginPercent.toFixed(1)}%`
-                    : "N/A"}
+                    ? simulation.safetyMarginPercent.toFixed(1)
+                    : "—"}%
+
                 </strong>
 
               </div>
@@ -2848,20 +2520,7 @@ export default function SimulatorShell({
           </section>
 
 
-          <section className="insight-card">
-
-            <div className="panel-kicker">
-              WHY THIS MATTERS
-            </div>
-
-            <p>
-              Growth only creates value when additional
-              contribution grows faster than the cash absorbed
-              by variable costs and the fixed-cost base.
-            </p>
-
-          </section>
-
+          {/* DRIVER WATCH */}
 
           <section className="insight-card">
 
@@ -2869,41 +2528,71 @@ export default function SimulatorShell({
               DRIVER WATCH
             </div>
 
-            <div className="driver-list">
 
-              <div>
-                <span>Price</span>
-                <span className="driver-positive">
-                  REVENUE
+            <div className="driver-watch">
+
+              <div className="driver-row">
+
+                <span>
+                  Price
                 </span>
+
+                <strong className="driver-positive">
+                  {scenario.price.toLocaleString("en-IN")}
+                </strong>
+
               </div>
 
-              <div>
-                <span>Variable cost</span>
-                <span className="driver-negative">
-                  MARGIN
+
+              <div className="driver-row">
+
+                <span>
+                  Variable cost
                 </span>
+
+                <strong className="driver-negative">
+                  {scenario.variableCost.toLocaleString("en-IN")}
+                </strong>
+
               </div>
 
-              <div>
-                <span>Fixed cost</span>
-                <span className="driver-warning">
-                  ABSORPTION
+
+              <div className="driver-row">
+
+                <span>
+                  Fixed cost
                 </span>
+
+                <strong>
+                  ₹{scenario.fixedCost.toLocaleString("en-IN")}
+                </strong>
+
               </div>
 
-              <div>
-                <span>CAC</span>
-                <span className="driver-positive">
-                  EFFICIENCY
+
+              <div className="driver-row">
+
+                <span>
+                  CAC
                 </span>
+
+                <strong>
+                  ₹{scenario.cac.toLocaleString("en-IN")}
+                </strong>
+
               </div>
 
-              <div>
-                <span>Retention</span>
-                <span className="driver-positive">
-                  LTV
+
+              <div className="driver-row">
+
+                <span>
+                  Retention
                 </span>
+
+                <strong className="driver-positive">
+                  {scenario.retentionMonths} mo
+                </strong>
+
               </div>
 
             </div>
@@ -2911,11 +2600,16 @@ export default function SimulatorShell({
           </section>
 
 
+          {/* INTELLIGENCE BUTTON */}
+
           <button
             type="button"
             className="intelligence-hint"
-            onClick={() => setIntelligence("waterfall")}
+            onClick={() =>
+              setIntelligence("waterfall")
+            }
           >
+
             <span>
               Click any visualization
             </span>
@@ -2923,14 +2617,12 @@ export default function SimulatorShell({
             <strong>
               OPEN INTELLIGENCE →
             </strong>
+
           </button>
 
         </aside>
 
       </section>
-
-
-      
 
 
       {/* =====================================================
@@ -2941,8 +2633,205 @@ export default function SimulatorShell({
         intelligence={intelligence}
         simulation={simulation}
         scenario={scenario}
-        onClose={() => setIntelligence(null)}
+        onClose={() =>
+          setIntelligence(null)
+        }
       />
+
+
+      {/* =====================================================
+          PROJECT INFO MODAL
+          THIS REPLACES THE OLD BOTTOM SIGNATURE
+      ===================================================== */}
+
+      {showInfo && (
+
+        <div
+          className="project-info-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="project-info-title"
+          onMouseDown={(event) => {
+
+            if (
+              event.target === event.currentTarget
+            ) {
+              closeInfo();
+            }
+
+          }}
+        >
+
+          <div className="project-info-modal">
+
+
+            {/* MODAL HEADER */}
+
+            <div className="project-info-header">
+
+              <div>
+
+                <div className="project-info-kicker">
+                  PROJECT SIGNATURE
+                </div>
+
+                <h2 id="project-info-title">
+                  Infocreon Internship
+                </h2>
+
+              </div>
+
+
+              <button
+                type="button"
+                className="project-info-close"
+                onClick={closeInfo}
+                aria-label="Close project information"
+              >
+                ×
+              </button>
+
+            </div>
+
+
+            {/* DIVIDER */}
+
+            <div className="project-info-divider" />
+
+
+            {/* DETAILS */}
+
+            <div className="project-info-details">
+
+
+              <div className="project-info-row">
+
+                <span>
+                  ARCHITECT
+                </span>
+
+                <strong>
+                  Parvathy CR
+                </strong>
+
+              </div>
+
+
+              <div className="project-info-row">
+
+                <span>
+                  BATCH
+                </span>
+
+                <strong>
+                  Batch 2 Interns
+                </strong>
+
+              </div>
+
+
+              <div className="project-info-row">
+
+                <span>
+                  TECHNOLOGY STACK
+                </span>
+
+                <strong>
+                  Next.js · FastAPI · Tailwind CSS · Apache ECharts
+                </strong>
+
+              </div>
+
+
+              <div className="project-info-row">
+
+                <span>
+                  DATA STATUS
+                </span>
+
+                <strong>
+                  SYNTHETIC DEMONSTRATION DATA
+                </strong>
+
+              </div>
+
+
+              <div className="project-info-row">
+
+                <span>
+                  DEVELOPED BY
+                </span>
+
+                <strong>
+                  Parvathy CR
+                </strong>
+
+              </div>
+
+
+              <div className="project-info-row">
+
+                <span>
+                  POC ID
+                </span>
+
+                <strong>
+                  6
+                </strong>
+
+              </div>
+
+
+              <div className="project-info-row">
+
+                <span>
+                  GITHUB
+                </span>
+
+                <strong>
+                  @parvathycr28
+                </strong>
+
+              </div>
+
+
+              <div className="project-info-row">
+
+                <span>
+                  PROJECT
+                </span>
+
+                <strong>
+                  Infocreon Internship
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            {/* FOOTER */}
+
+            <div className="project-info-footer">
+
+              <span>
+                UNIT ECONOMICS &amp; BREAK-EVEN SIMULATOR
+              </span>
+
+              <button
+                type="button"
+                onClick={closeInfo}
+              >
+                CLOSE
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
 
     </main>
   );
@@ -2956,37 +2845,33 @@ export default function SimulatorShell({
 
 
 /* =========================================================
-   DESIGN TOKENS
-========================================================= */
+   ROOT
+   ========================================================= */
 
 :root {
   --bg: #030712;
-  --surface: #0b1117;
-  --surface-2: #0f1720;
+  --surface: #08121c;
+  --surface-2: #0b1117;
 
-  --border: #1f2937;
-  --border-soft: rgba(56, 189, 248, 0.14);
+  --border: #203344;
+  --border-soft: rgba(56, 189, 248, 0.18);
 
-  --cyan: #38bdf8;
-  --cyan-soft: rgba(56, 189, 248, 0.12);
-
+  --cyan: #22d3ee;
+  --green: #22c55e;
+  --yellow: #facc15;
+  --orange: #fb923c;
+  --red: #ef4444;
   --indigo: #818cf8;
-  --indigo-soft: rgba(129, 140, 248, 0.12);
-
-  --green: #34d399;
-  --yellow: #fbbf24;
-  --red: #fb7185;
 
   --text: #f8fafc;
   --text-secondary: #cbd5e1;
   --muted: #64748b;
-  --muted-dark: #475569;
 }
 
 
 /* =========================================================
-   GLOBAL RESET
-========================================================= */
+   RESET
+   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -2995,24 +2880,27 @@ export default function SimulatorShell({
 html {
   margin: 0;
   padding: 0;
+
   min-height: 100%;
+
   background: var(--bg);
 }
 
 body {
   margin: 0;
   padding: 0;
+
   min-height: 100vh;
 
   background:
     radial-gradient(
-      circle at 72% -10%,
-      rgba(56, 189, 248, 0.08),
-      transparent 32rem
+      circle at 70% -10%,
+      rgba(34, 211, 238, 0.07),
+      transparent 34rem
     ),
     radial-gradient(
-      circle at 5% 50%,
-      rgba(129, 140, 248, 0.045),
+      circle at 5% 60%,
+      rgba(129, 140, 248, 0.04),
       transparent 30rem
     ),
     var(--bg);
@@ -3047,32 +2935,29 @@ input {
   outline: none;
 }
 
-::selection {
-  background: rgba(56, 189, 248, 0.25);
-}
-
 
 /* =========================================================
-   MAIN DASHBOARD
-========================================================= */
+   DASHBOARD SHELL
+   ========================================================= */
 
 .dashboard-shell {
   width: 100%;
+
   min-height: 100vh;
 
   padding:
-    22px
-    24px
-    40px;
+    18px
+    20px
+    28px;
 
   background-image:
     linear-gradient(
-      rgba(56, 189, 248, 0.018) 1px,
+      rgba(34, 211, 238, 0.018) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(56, 189, 248, 0.018) 1px,
+      rgba(34, 211, 238, 0.018) 1px,
       transparent 1px
     );
 
@@ -3082,7 +2967,7 @@ input {
 
 /* =========================================================
    HEADER
-========================================================= */
+   ========================================================= */
 
 .dashboard-header {
   width: 100%;
@@ -3091,36 +2976,35 @@ input {
   margin: 0 auto;
 
   padding:
+    4px
     2px
-    2px
-    20px;
+    18px;
 
   display: flex;
+
   align-items: flex-start;
+
   justify-content: space-between;
 
   gap: 24px;
 
   border-bottom:
     1px solid
-    rgba(31, 41, 55, 0.85);
+    rgba(32, 51, 68, 0.9);
 }
 
 .header-brand {
   min-width: 0;
 }
 
-.brand-kicker,
-.panel-kicker,
-.section-kicker {
+.brand-kicker {
   color: var(--cyan);
 
-  font-size: 9px;
+  font-size: 10px;
+
   font-weight: 700;
 
-  letter-spacing: 0.2em;
-
-  text-transform: uppercase;
+  letter-spacing: 0.22em;
 }
 
 .header-brand h1 {
@@ -3128,7 +3012,8 @@ input {
 
   color: #ffffff;
 
-  font-size: clamp(20px, 2vw, 30px);
+  font-size:
+    clamp(21px, 2vw, 30px);
 
   font-weight: 700;
 
@@ -3142,15 +3027,16 @@ input {
 
   color: var(--muted);
 
-  font-size: 10px;
+  font-size: 9px;
 
-  letter-spacing: 0.15em;
+  letter-spacing: 0.16em;
 
   text-transform: uppercase;
 }
 
 .header-actions {
   display: flex;
+
   align-items: center;
 
   gap: 10px;
@@ -3159,14 +3045,15 @@ input {
 }
 
 .live-status {
+  min-height: 32px;
+
+  padding: 0 11px;
+
   display: flex;
+
   align-items: center;
 
   gap: 7px;
-
-  min-height: 30px;
-
-  padding: 0 11px;
 
   border:
     1px solid
@@ -3175,7 +3062,7 @@ input {
   border-radius: 7px;
 
   background:
-    rgba(11, 17, 23, 0.9);
+    rgba(8, 18, 28, 0.9);
 
   color: var(--muted);
 
@@ -3193,14 +3080,16 @@ input {
   background: var(--green);
 
   box-shadow:
-    0 0 9px
-    rgba(52, 211, 153, 0.75);
+    0 0 10px
+    rgba(34, 197, 94, 0.75);
 }
 
 .header-info-button {
-  min-height: 30px;
+  min-height: 32px;
 
-  padding: 0 13px;
+  padding:
+    0
+    13px;
 
   border:
     1px solid
@@ -3210,48 +3099,48 @@ input {
 
   background: var(--surface);
 
-  color: var(--muted);
+  color: #94a3b8;
 
   font-size: 8px;
 
   letter-spacing: 0.12em;
 
   transition:
-    border-color 160ms ease,
-    color 160ms ease,
-    background 160ms ease;
+    150ms ease;
 }
 
 .header-info-button:hover {
   border-color:
-    rgba(56, 189, 248, 0.5);
-
-  background:
-    rgba(56, 189, 248, 0.06);
+    rgba(34, 211, 238, 0.55);
 
   color: var(--cyan);
+
+  background:
+    rgba(34, 211, 238, 0.06);
 }
 
 
 /* =========================================================
    INTRO
-========================================================= */
+   ========================================================= */
 
 .dashboard-intro {
   width: 100%;
   max-width: 1680px;
 
   margin:
-    20px
+    14px
     auto
-    14px;
+    12px;
 
   padding:
-    16px
-    18px;
+    14px
+    16px;
 
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
   gap: 24px;
@@ -3265,17 +3154,29 @@ input {
   background:
     linear-gradient(
       135deg,
-      rgba(11, 17, 23, 0.94),
-      rgba(5, 12, 18, 0.94)
+      rgba(8, 18, 28, 0.95),
+      rgba(5, 12, 18, 0.95)
     );
+}
 
-  box-shadow:
-    0 12px 35px
-    rgba(0, 0, 0, 0.2);
+.section-kicker,
+.panel-kicker {
+  color: var(--cyan);
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+
+  text-transform: uppercase;
 }
 
 .dashboard-intro h2 {
-  margin: 6px 0 0;
+  margin:
+    6px
+    0
+    0;
 
   color: #ffffff;
 
@@ -3287,7 +3188,10 @@ input {
 }
 
 .dashboard-intro p {
-  margin: 6px 0 0;
+  margin:
+    6px
+    0
+    0;
 
   max-width: 760px;
 
@@ -3299,20 +3203,21 @@ input {
 }
 
 .data-mode {
-  min-width: 150px;
+  min-width: 155px;
 
   padding:
-    9px
+    8px
     11px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
 
   border-left:
     1px solid
     var(--border);
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 4px;
 }
 
 .data-mode span {
@@ -3333,8 +3238,8 @@ input {
 
 
 /* =========================================================
-   MAIN THREE COLUMN STRUCTURE
-========================================================= */
+   THREE COLUMN DASHBOARD
+   ========================================================= */
 
 .dashboard-layout {
   width: 100%;
@@ -3356,18 +3261,16 @@ input {
 
 
 /* =========================================================
-   COMMON PANEL
-========================================================= */
+   LEFT SCENARIO SIDEBAR
+   ========================================================= */
 
-.scenario-sidebar,
-.insight-card,
-.decision-card {
-  background:
-    linear-gradient(
-      145deg,
-      rgba(11, 17, 23, 0.97),
-      rgba(6, 12, 18, 0.97)
-    );
+.scenario-sidebar {
+  width: 100%;
+
+  min-height: 760px;
+
+  padding:
+    16px;
 
   border:
     1px solid
@@ -3375,209 +3278,179 @@ input {
 
   border-radius: 9px;
 
+  background:
+    linear-gradient(
+      145deg,
+      rgba(8, 18, 28, 0.98),
+      rgba(5, 12, 18, 0.98)
+    );
+
   box-shadow:
     0 12px 35px
     rgba(0, 0, 0, 0.18);
 
-  backdrop-filter: blur(14px);
-}
-
-
-/* =========================================================
-   LEFT SCENARIO SIDEBAR
-========================================================= */
-
-.scenario-sidebar {
-  position: relative;
-
-  padding: 16px;
-
-  min-height: 610px;
+  overflow: hidden;
 }
 
 .sidebar-heading {
   display: flex;
+
   align-items: flex-start;
+
   justify-content: space-between;
 
-  gap: 8px;
-
-  padding-bottom: 14px;
-
-  border-bottom:
-    1px solid
-    rgba(31, 41, 55, 0.8);
+  gap: 10px;
 }
 
 .sidebar-heading h3 {
-  margin: 5px 0 0;
+  margin:
+    7px
+    0
+    0;
 
-  color: #ffffff;
+  color: #f8fafc;
 
-  font-size: 14px;
+  font-size: 17px;
 
   font-weight: 650;
 }
 
 .synthetic-badge {
   padding:
-    4px
-    7px;
+    5px
+    9px;
 
   border:
     1px solid
-    rgba(129, 140, 248, 0.25);
+    rgba(129, 140, 248, 0.45);
 
   border-radius: 999px;
 
-  background:
-    rgba(129, 140, 248, 0.07);
-
   color: var(--indigo);
 
-  font-size: 7px;
+  font-size: 8px;
 
   letter-spacing: 0.1em;
 }
 
+.sidebar-divider {
+  height: 1px;
 
-/*
-   Your existing ScenarioControls component uses
-   absolute positioning.
+  margin:
+    15px
+    0
+    20px;
 
-   We deliberately cancel that positioning here so
-   it becomes a normal sidebar panel.
-*/
-
-.scenario-sidebar .glass-panel {
-  position: static !important;
-
-  width: 100% !important;
-
-  max-width: none !important;
-
-  margin: 14px 0 0 !important;
-
-  padding: 0 !important;
-
-  border: 0 !important;
-
-  background: transparent !important;
-
-  box-shadow: none !important;
+  background:
+    var(--border);
 }
 
 
-/* Hide the duplicate heading inside the old control */
-.scenario-sidebar .glass-panel > div:first-child {
-  display: none;
-}
+/* =========================================================
+   SCENARIO CONTROLS
+   ========================================================= */
 
-
-/* Scenario controls */
-
-.scenario-sidebar label {
-  display: block;
-
-  margin-bottom: 16px;
-}
-
-.scenario-sidebar label > div {
-  margin-bottom: 7px;
-}
-
-.scenario-sidebar label span {
-  color: var(--muted);
-}
-
-.scenario-sidebar label span:last-child {
-  color: var(--text-secondary);
-
-  font-size: 10px;
-}
-
-
-/* Product select */
-
-.scenario-sidebar select {
+.scenario-controls {
   width: 100%;
 
-  min-height: 34px;
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 23px;
+}
+
+.product-control {
+  display: block;
+}
+
+.control-label,
+.slider-heading span {
+  color: #71839a;
+
+  font-size: 11px;
+}
+
+.product-control .control-label {
+  display: block;
+
+  margin-bottom: 9px;
+}
+
+.product-control select {
+  width: 100%;
+
+  height: 42px;
 
   padding:
     0
-    10px;
+    12px;
 
   border:
     1px solid
-    var(--border);
+    #25384a;
 
-  border-radius: 6px;
+  border-radius: 7px;
 
-  background:
-    #071018 !important;
+  background: #050d16;
 
-  color: var(--text-secondary) !important;
+  color: #cbd5e1;
 
-  font-size: 10px;
-
-  appearance: auto;
-}
-
-.scenario-sidebar select:hover,
-.scenario-sidebar select:focus {
-  border-color:
-    rgba(56, 189, 248, 0.5);
-}
-
-.scenario-sidebar select option {
-  background: #0b1117;
-
-  color: #f8fafc;
-}
-
-
-/* Range controls */
-
-.scenario-sidebar input[type="range"] {
-  width: 100%;
-
-  height: 4px;
-
-  margin: 4px 0 0;
-
-  appearance: none;
-
-  border-radius: 999px;
-
-  background:
-    #1f2937;
+  font-size: 12px;
 
   cursor: pointer;
 }
 
-.scenario-sidebar input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-
-  width: 11px;
-  height: 11px;
-
-  border: 2px solid
+.product-control select:focus {
+  border-color:
     var(--cyan);
-
-  border-radius: 50%;
-
-  background:
-    #071018;
-
-  box-shadow:
-    0 0 8px
-    rgba(56, 189, 248, 0.45);
 }
 
-.scenario-sidebar input[type="range"]::-moz-range-thumb {
-  width: 11px;
-  height: 11px;
+.scenario-slider {
+  display: block;
+}
+
+.slider-heading {
+  margin-bottom: 10px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 8px;
+}
+
+.slider-heading strong {
+  color: #e2e8f0;
+
+  font-size: 10px;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+.range-control {
+  width: 100%;
+
+  height: 5px;
+
+  appearance: none;
+
+  border: 0;
+
+  border-radius: 999px;
+
+  background: #1e2b3a;
+}
+
+.range-control::-webkit-slider-thumb {
+  width: 14px;
+  height: 14px;
+
+  appearance: none;
 
   border:
     2px solid
@@ -3585,46 +3458,183 @@ input {
 
   border-radius: 50%;
 
-  background:
-    #071018;
+  background: #07101a;
+
+  box-shadow:
+    0 0 10px
+    rgba(34, 211, 238, 0.45);
+
+  cursor: pointer;
+}
+
+.range-control::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+
+  border:
+    2px solid
+    var(--cyan);
+
+  border-radius: 50%;
+
+  background: #07101a;
+
+  box-shadow:
+    0 0 10px
+    rgba(34, 211, 238, 0.45);
+
+  cursor: pointer;
 }
 
 
 /* =========================================================
    CENTER
-========================================================= */
+   ========================================================= */
 
 .analytics-column {
+  width: 100%;
+
   min-width: 0;
 }
-
-
-/* =========================================================
-   KPI METRICS
-========================================================= */
 
 .metrics-area {
   width: 100%;
 
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
-.metrics-area > div {
-  display: grid !important;
+.metrics-grid {
+  width: 100%;
+
+  display: grid;
 
   grid-template-columns:
-    repeat(4, minmax(0, 1fr)) !important;
+    repeat(4, minmax(0, 1fr));
 
-  gap: 9px !important;
+  gap: 10px;
 }
 
-.metrics-area > div > div {
-  min-height: 92px;
 
-  padding: 13px !important;
+/* =========================================================
+   KPI CARDS
+   ========================================================= */
+
+.metric-card {
+  position: relative;
+
+  min-width: 0;
+
+  min-height: 108px;
+
+  padding:
+    15px;
+
+  overflow: hidden;
 
   border:
     1px solid
+    var(--border);
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #08121c,
+      #050c14
+    );
+}
+
+.metric-accent {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 1px;
+
+  background:
+    rgba(34, 211, 238, 0.45);
+}
+
+.metric-label {
+  color: var(--cyan);
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  line-height: 1.2;
+}
+
+.metric-value {
+  margin-top: 7px;
+
+  font-size: 20px;
+
+  font-weight: 650;
+
+  line-height: 1.1;
+}
+
+.metric-description {
+  margin-top: 5px;
+
+  color: #e2e8f0;
+
+  font-size: 11px;
+}
+
+.metric-green {
+  color: var(--green);
+}
+
+.metric-yellow {
+  color: var(--yellow);
+}
+
+.metric-orange {
+  color: var(--orange);
+}
+
+.metric-red {
+  color: var(--red);
+}
+
+
+/* =========================================================
+   ANALYTICS GRID
+   ========================================================= */
+
+.analytics-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+
+/* Make existing visualization buttons fit dashboard */
+
+.analytics-grid > button,
+.analytics-grid > section {
+  min-width: 0;
+
+  min-height: 380px;
+}
+
+
+/* =========================================================
+   VISUALIZATION PANELS
+   ========================================================= */
+
+.analytics-grid > button {
+  border-color:
     var(--border) !important;
 
   border-radius: 8px !important;
@@ -3632,175 +3642,79 @@ input {
   background:
     linear-gradient(
       145deg,
-      rgba(11, 17, 23, 0.98),
-      rgba(6, 12, 18, 0.98)
+      #08121c,
+      #050c14
     ) !important;
-
-  box-shadow:
-    inset 0 1px 0
-    rgba(255, 255, 255, 0.015);
-}
-
-.metrics-area > div > div:hover {
-  border-color:
-    rgba(56, 189, 248, 0.28) !important;
-
-  box-shadow:
-    0 0 0 1px
-    rgba(56, 189, 248, 0.035),
-    0 10px 30px
-    rgba(0, 0, 0, 0.2);
-}
-
-.metrics-area .metric-number {
-  color: #ffffff;
-
-  font-size: 21px;
-
-  line-height: 1.1;
-}
-
-.metrics-area > div > div:first-child .metric-number {
-  color: var(--green);
-}
-
-
-/* =========================================================
-   CHART GRID
-========================================================= */
-
-.analytics-grid {
-  display: grid;
-
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  gap: 12px;
-
-  min-width: 0;
-}
-
-
-/*
-   Existing chart components return <button>.
-   This CSS turns those buttons into proper dashboard
-   cards instead of browser-default white buttons.
-*/
-
-.analytics-grid > button {
-  width: 100%;
-
-  min-width: 0;
-
-  min-height: 300px;
-
-  padding: 15px !important;
-
-  border:
-    1px solid
-    var(--border) !important;
-
-  border-radius: 9px !important;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(11, 17, 23, 0.98),
-      rgba(6, 12, 18, 0.98)
-    ) !important;
-
-  color: var(--text) !important;
-
-  text-align: left;
-
-  box-shadow:
-    0 12px 35px
-    rgba(0, 0, 0, 0.17);
-
-  transition:
-    border-color 160ms ease,
-    transform 160ms ease,
-    box-shadow 160ms ease;
 }
 
 .analytics-grid > button:hover {
   border-color:
-    rgba(56, 189, 248, 0.32) !important;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(12, 21, 29, 0.99),
-      rgba(6, 13, 20, 0.99)
-    ) !important;
-
-  transform:
-    translateY(-1px);
-
-  box-shadow:
-    0 0 0 1px
-    rgba(56, 189, 248, 0.04),
-    0 18px 42px
-    rgba(0, 0, 0, 0.25);
-}
-
-
-/* Chart headings */
-
-.analytics-grid > button .text-violet,
-.analytics-grid > button .text-violet\/80 {
-  color: var(--cyan) !important;
-}
-
-.analytics-grid > button .text-slate-700 {
-  color: var(--muted-dark) !important;
-}
-
-.analytics-grid > button .text-sm {
-  color: #f8fafc !important;
+    rgba(34, 211, 238, 0.55) !important;
 }
 
 
 /* =========================================================
-   LOWER DECISION STRIP
-========================================================= */
+   DECISION STRIP
+   ========================================================= */
 
 .decision-strip {
+  margin-top: 10px;
+
   display: grid;
 
   grid-template-columns:
-    1.15fr
-    0.85fr;
+    1fr
+    1fr;
 
-  gap: 12px;
-
-  margin-top: 12px;
+  gap: 10px;
 }
 
 .decision-card {
-  padding: 15px;
+  min-width: 0;
+
+  padding:
+    15px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #08121c,
+      #050c14
+    );
 }
 
 .decision-card h3 {
-  margin: 6px 0 0;
+  margin:
+    7px
+    0
+    0;
 
-  color: #ffffff;
+  color: #f8fafc;
 
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .decision-card p {
-  margin: 7px 0 0;
+  margin:
+    7px
+    0
+    0;
 
-  color: var(--muted);
+  color: #94a3b8;
 
-  font-size: 9px;
+  font-size: 10px;
 
   line-height: 1.7;
 }
 
 .scenario-summary {
-  margin-top: 10px;
+  margin-top: 12px;
 
   display: grid;
 
@@ -3810,25 +3724,25 @@ input {
   gap: 8px;
 }
 
-.scenario-summary div {
-  padding: 9px;
+.scenario-summary > div {
+  padding:
+    8px;
 
   border:
     1px solid
-    rgba(31, 41, 55, 0.9);
+    rgba(32, 51, 68, 0.8);
 
   border-radius: 6px;
 
-  background:
-    rgba(3, 7, 18, 0.45);
+  background: #050d16;
 }
 
 .scenario-summary span {
   display: block;
 
-  color: var(--muted);
+  color: #64748b;
 
-  font-size: 7px;
+  font-size: 8px;
 
   text-transform: uppercase;
 
@@ -3838,46 +3752,54 @@ input {
 .scenario-summary strong {
   display: block;
 
-  margin-top: 4px;
+  margin-top: 5px;
 
-  color: var(--text-secondary);
+  color: #e2e8f0;
 
-  font-size: 9px;
+  font-size: 10px;
 }
 
 
 /* =========================================================
-   RIGHT INTELLIGENCE SIDEBAR
-========================================================= */
+   RIGHT INTELLIGENCE
+   ========================================================= */
 
 .insight-sidebar {
+  width: 100%;
+
+  min-height: 760px;
+
   display: flex;
 
   flex-direction: column;
 
   gap: 10px;
-
-  min-width: 0;
 }
 
 .insight-card {
-  padding: 14px;
-}
+  padding:
+    14px;
 
-.signal-card {
-  border-color:
-    rgba(56, 189, 248, 0.22);
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 8px;
 
   background:
     linear-gradient(
       145deg,
-      rgba(8, 28, 38, 0.97),
-      rgba(7, 16, 24, 0.97)
+      rgba(8, 18, 28, 0.98),
+      rgba(5, 12, 18, 0.98)
     );
+
+  box-shadow:
+    0 12px 35px
+    rgba(0, 0, 0, 0.14);
 }
 
 .signal-header {
-  margin-top: 11px;
+  margin-top: 12px;
 
   display: flex;
 
@@ -3887,67 +3809,54 @@ input {
 }
 
 .signal-value {
-  color: var(--cyan);
+  font-size: 17px;
 
-  font-size: 20px;
+  font-weight: 650;
 
-  font-weight: 700;
-
-  letter-spacing: -0.03em;
+  letter-spacing: 0.04em;
 }
 
 .signal-caption {
-  margin-top: 2px;
-
-  color: var(--muted);
-
-  font-size: 8px;
-}
-
-.signal-pulse {
-  width: 11px;
-  height: 11px;
-
-  border-radius: 50%;
-
-  background: var(--cyan);
-
-  box-shadow:
-    0 0 16px
-    rgba(56, 189, 248, 0.75);
-}
-
-.insight-card p {
-  margin: 10px 0 0;
+  margin-top: 3px;
 
   color: var(--muted);
 
   font-size: 9px;
+}
+
+.signal-card p,
+.insight-card > p {
+  margin:
+    10px
+    0
+    0;
+
+  color: #94a3b8;
+
+  font-size: 10px;
 
   line-height: 1.7;
 }
 
+.signal-pulse {
+  width: 9px;
+  height: 9px;
 
-/* =========================================================
-   OUTPUT LIST
-========================================================= */
+  border-radius: 50%;
+
+  background: var(--green);
+
+  box-shadow:
+    0 0 12px
+    rgba(34, 197, 94, 0.7);
+}
 
 .output-list {
   margin-top: 10px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 5px;
 }
 
 .output-row {
   min-height: 34px;
-
-  padding:
-    7px
-    9px;
 
   display: flex;
 
@@ -3955,28 +3864,27 @@ input {
 
   justify-content: space-between;
 
-  gap: 8px;
+  gap: 10px;
 
-  border:
+  border-bottom:
     1px solid
-    rgba(31, 41, 55, 0.85);
+    rgba(32, 51, 68, 0.7);
+}
 
-  border-radius: 6px;
-
-  background:
-    rgba(3, 7, 18, 0.5);
+.output-row:last-child {
+  border-bottom: 0;
 }
 
 .output-row span {
-  color: var(--muted);
+  color: #94a3b8;
 
-  font-size: 8px;
+  font-size: 10px;
 }
 
 .output-row strong {
-  color: var(--text-secondary);
+  font-size: 11px;
 
-  font-size: 9px;
+  font-weight: 600;
 }
 
 .positive-value {
@@ -3987,43 +3895,57 @@ input {
   color: var(--red) !important;
 }
 
+.yellow-value {
+  color: var(--yellow) !important;
+}
+
+.red-value {
+  color: var(--red) !important;
+}
+
+.cyan-value {
+  color: var(--cyan) !important;
+}
+
 
 /* =========================================================
    DRIVER WATCH
-========================================================= */
+   ========================================================= */
 
 .driver-list {
-  margin-top: 10px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 4px;
+  margin-top: 9px;
 }
 
 .driver-list > div {
-  padding:
-    7px
-    8px;
+  min-height: 28px;
 
   display: flex;
+
+  align-items: center;
 
   justify-content: space-between;
 
   border-bottom:
     1px solid
-    rgba(31, 41, 55, 0.65);
+    rgba(32, 51, 68, 0.65);
 }
 
-.driver-list span:first-child {
-  color: var(--muted);
+.driver-list > div:last-child {
+  border-bottom: 0;
+}
 
+.driver-list > div > span:first-child {
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+.driver-positive,
+.driver-negative,
+.driver-warning {
   font-size: 8px;
-}
 
-.driver-list span:last-child {
-  font-size: 7px;
+  font-weight: 600;
 
   letter-spacing: 0.08em;
 }
@@ -4042,79 +3964,71 @@ input {
 
 
 /* =========================================================
-   INTELLIGENCE BUTTON
-========================================================= */
+   OPEN INTELLIGENCE
+   ========================================================= */
 
 .intelligence-hint {
   width: 100%;
 
+  margin-top: auto;
+
   padding:
-    11px;
+    11px
+    12px;
 
   display: flex;
 
-  flex-direction: column;
+  align-items: center;
 
-  align-items: flex-start;
+  justify-content: space-between;
 
-  gap: 4px;
+  gap: 8px;
 
   border:
     1px solid
-    rgba(56, 189, 248, 0.22);
+    var(--border);
 
   border-radius: 7px;
 
-  background:
-    rgba(56, 189, 248, 0.045);
+  background: #07101a;
 
-  color: var(--muted);
+  color: #64748b;
+
+  font-size: 8px;
 
   text-align: left;
 }
 
-.intelligence-hint span {
-  font-size: 8px;
+.intelligence-hint:hover {
+  border-color:
+    rgba(34, 211, 238, 0.5);
 }
 
 .intelligence-hint strong {
   color: var(--cyan);
 
   font-size: 8px;
-
-  letter-spacing: 0.08em;
-}
-
-.intelligence-hint:hover {
-  border-color:
-    rgba(56, 189, 248, 0.5);
-
-  background:
-    rgba(56, 189, 248, 0.08);
 }
 
 
 /* =========================================================
-   EXISTING INTELLIGENCE SLIDE OVER
-========================================================= */
+   INTELLIGENCE SLIDE OVER
+   ========================================================= */
 
 .intelligence-backdrop {
   position: fixed;
 
   inset: 0;
 
-  z-index: 90;
-
-  width: 100%;
-  height: 100%;
+  z-index: 80;
 
   border: 0;
 
   background:
-    rgba(0, 0, 0, 0.72);
+    rgba(0, 0, 0, 0.58);
 
   backdrop-filter:
-    blur(7px);
+    blur(5px);
 }
 
 .intelligence-panel {
@@ -4122,102 +4036,255 @@ input {
 
   top: 0;
   right: 0;
+  bottom: 0;
 
-  z-index: 100;
+  z-index: 90;
 
-  width: min(430px, 92vw);
+  width:
+    min(430px, 92vw);
 
-  height: 100vh;
+  padding:
+    24px;
 
   overflow-y: auto;
+
+  background:
+    linear-gradient(
+      145deg,
+      #08121c,
+      #050c14
+    );
 
   border-left:
     1px solid
     var(--border);
 
-  background:
-    linear-gradient(
-      160deg,
-      #0b1117,
-      #050b11
-    );
-
   box-shadow:
-    -20px 0 60px
-    rgba(0, 0, 0, 0.45);
+    -20px
+    0
+    50px
+    rgba(0, 0, 0, 0.4);
 }
 
+.intelligence-header {
+  display: flex;
 
-/* =========================================================
-   MODAL
-========================================================= */
+  align-items: flex-start;
 
-.info-modal {
-  background:
-    linear-gradient(
-      145deg,
-      #0b1117,
-      #050b11
-    ) !important;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+.intelligence-kicker {
+  color: var(--cyan);
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.16em;
+}
+
+.intelligence-header h2 {
+  margin:
+    7px
+    0
+    0;
+
+  color: #f8fafc;
+
+  font-size: 20px;
+}
+
+.intelligence-close {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
 
   border:
     1px solid
-    rgba(56, 189, 248, 0.18) !important;
+    var(--border);
+
+  border-radius: 7px;
+
+  background: #07101a;
+
+  color: #94a3b8;
 }
 
+.intelligence-close:hover {
+  color: var(--cyan);
 
-/* =========================================================
-   DEVELOPER SIGNATURE
-========================================================= */
+  border-color:
+    rgba(34, 211, 238, 0.5);
+}
 
-.dashboard-shell .pointer-events-none.absolute {
-  position: static !important;
+.intelligence-divider {
+  height: 1px;
 
   margin:
     18px
+    0;
+
+  background: var(--border);
+}
+
+.intelligence-section-label {
+  color: var(--cyan);
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.16em;
+}
+
+.intelligence-description p,
+.management-question p {
+  color: #94a3b8;
+
+  font-size: 11px;
+
+  line-height: 1.8;
+}
+
+.intelligence-section {
+  margin-top: 24px;
+}
+
+.intelligence-stats {
+  margin-top: 10px;
+}
+
+.intelligence-stat {
+  padding:
+    11px
+    0;
+
+  display: flex;
+
+  gap: 12px;
+
+  border-bottom:
+    1px solid
+    rgba(32, 51, 68, 0.7);
+}
+
+.intelligence-stat-index {
+  color: var(--cyan);
+
+  font-size: 9px;
+}
+
+.intelligence-stat-content {
+  flex: 1;
+}
+
+.intelligence-stat-content span {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 9px;
+}
+
+.intelligence-stat-content strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #e2e8f0;
+
+  font-size: 13px;
+}
+
+.management-question {
+  margin-top: 26px;
+
+  padding:
+    14px;
+
+  border:
+    1px solid
+    var(--border);
+
+  border-radius: 8px;
+
+  background: #050d16;
+}
+
+.management-question h3 {
+  margin:
+    7px
     0
-    0
-    auto;
+    0;
 
-  width: fit-content;
+  color: #f8fafc;
 
-  text-align: right;
+  font-size: 14px;
 }
 
-.dashboard-shell .pointer-events-none.absolute > div {
-  color: #475569 !important;
+.intelligence-footer {
+  margin-top: 26px;
+
+  padding-top: 14px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  border-top:
+    1px solid
+    var(--border);
+
+  color: #64748b;
+
+  font-size: 9px;
 }
 
+.footer-pulse {
+  width: 6px;
+  height: 6px;
 
-/* =========================================================
-   SCROLLBAR
-========================================================= */
+  border-radius: 50%;
 
-::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
-}
-
-::-webkit-scrollbar-track {
-  background: #030712;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #1f2937;
-
-  border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: var(--green);
 }
 
 
 /* =========================================================
    RESPONSIVE
-========================================================= */
+   ========================================================= */
 
 @media (max-width: 1250px) {
+
+  .dashboard-layout {
+    grid-template-columns:
+      230px
+      minmax(0, 1fr)
+      230px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+  }
+
+  .metric-value {
+    font-size: 18px;
+  }
+
+}
+
+
+@media (max-width: 1050px) {
 
   .dashboard-layout {
     grid-template-columns:
@@ -4226,28 +4293,24 @@ input {
   }
 
   .insight-sidebar {
-    grid-column:
-      1 / -1;
+    grid-column: 1 / -1;
 
     display: grid;
 
     grid-template-columns:
-      repeat(3, minmax(0, 1fr));
+      repeat(2, minmax(0, 1fr));
+
+    min-height: auto;
   }
 
   .intelligence-hint {
-    grid-column:
-      1 / -1;
+    margin-top: 0;
   }
 
 }
 
 
-@media (max-width: 900px) {
-
-  .dashboard-shell {
-    padding: 14px;
-  }
+@media (max-width: 800px) {
 
   .dashboard-header {
     flex-direction: column;
@@ -4258,27 +4321,46 @@ input {
   }
 
   .dashboard-layout {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 
-  .scenario-sidebar {
+  .scenario-sidebar,
+  .insight-sidebar {
     min-height: auto;
+  }
+
+  .metrics-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .decision-strip {
+    grid-template-columns: 1fr;
   }
 
   .insight-sidebar {
     display: flex;
   }
 
-  .metrics-area > div {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr)) !important;
-  }
-
 }
 
 
-@media (max-width: 650px) {
+@media (max-width: 520px) {
+
+  .dashboard-shell {
+    padding:
+      12px
+      10px
+      20px;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
 
   .dashboard-intro {
     flex-direction: column;
@@ -4294,745 +4376,942 @@ input {
     border-top:
       1px solid
       var(--border);
-
-    padding:
-      10px
-      0
-      0;
-  }
-
-  .analytics-grid {
-    grid-template-columns:
-      1fr;
-  }
-
-  .decision-strip {
-    grid-template-columns:
-      1fr;
   }
 
   .scenario-summary {
-    grid-template-columns:
-      1fr;
-  }
-
-  .metrics-area > div {
-    grid-template-columns:
-      1fr !important;
+    grid-template-columns: 1fr;
   }
 
 }
 /* =========================================================
-   INTELLIGENCE SLIDE-OVER
-========================================================= */
+   PROJECT INFO MODAL
+   ========================================================= */
 
-.intelligence-backdrop {
-  position: fixed !important;
-  inset: 0 !important;
+.project-info-overlay {
+  position: fixed;
+  inset: 0;
 
-  z-index: 90 !important;
+  z-index: 9999;
 
-  width: 100% !important;
-  height: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  padding: 0 !important;
-  margin: 0 !important;
+  padding: 24px;
 
-  border: 0 !important;
+  background: rgba(0, 0, 0, 0.72);
 
-  background:
-    rgba(1, 4, 9, 0.76) !important;
-
-  backdrop-filter:
-    blur(8px);
-
-  cursor: default !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 
-/* PANEL */
+.project-info-modal {
+  width: min(680px, 100%);
 
-.intelligence-panel {
-  position: fixed !important;
+  max-height: min(720px, calc(100vh - 48px));
 
-  top: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
+  overflow-y: auto;
 
-  z-index: 100 !important;
+  border: 1px solid rgba(56, 189, 248, 0.28);
 
-  width: min(430px, 92vw) !important;
-  height: 100vh !important;
-
-  overflow-y: auto !important;
-
-  padding: 0 !important;
-
-  border-left:
-    1px solid
-    rgba(56, 189, 248, 0.18) !important;
-
-  border-radius: 0 !important;
+  border-radius: 18px;
 
   background:
-    linear-gradient(
-      160deg,
-      #0b1117 0%,
-      #071019 55%,
-      #030712 100%
-    ) !important;
-
-  color: #f8fafc !important;
+    radial-gradient(
+      circle at 80% 0%,
+      rgba(56, 189, 248, 0.10),
+      transparent 40%
+    ),
+    #0B1117;
 
   box-shadow:
-    -24px 0 70px
-    rgba(0, 0, 0, 0.55) !important;
+    0 30px 100px rgba(0, 0, 0, 0.65),
+    0 0 40px rgba(56, 189, 248, 0.08);
 
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
+  color: #F8FAFC;
+
+  animation: projectInfoIn 180ms ease-out;
 }
 
 
-/* HEADER */
+@keyframes projectInfoIn {
 
-.intelligence-header {
-  min-height: 112px;
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
 
-  padding:
-    26px
-    26px
-    20px;
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 
+}
+
+
+.project-info-header {
   display: flex;
 
   align-items: flex-start;
   justify-content: space-between;
 
-  gap: 18px;
+  gap: 24px;
+
+  padding: 26px 28px 22px;
 }
 
-.intelligence-kicker {
-  color: #38bdf8;
 
-  font-size: 9px;
+.project-info-kicker {
+  color: #38BDF8;
+
+  font-size: 10px;
+
   font-weight: 700;
 
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
 
   text-transform: uppercase;
 }
 
-.intelligence-header h2 {
+
+.project-info-header h2 {
   margin: 8px 0 0;
 
-  color: #f8fafc;
+  color: #F8FAFC;
 
-  font-size: 22px;
+  font-size: 25px;
 
   font-weight: 650;
 
-  letter-spacing: -0.03em;
-
-  line-height: 1.15;
+  letter-spacing: -0.02em;
 }
 
 
-/* CLOSE BUTTON */
-
-.intelligence-close {
-  flex-shrink: 0;
-
-  width: 34px;
-  height: 34px;
-
+.project-info-close {
   display: flex;
 
   align-items: center;
   justify-content: center;
 
-  border:
-    1px solid
-    #1f2937;
+  width: 36px;
+  height: 36px;
 
-  border-radius: 7px;
+  flex-shrink: 0;
 
-  background:
-    #0b1117;
+  border: 1px solid rgba(255, 255, 255, 0.10);
 
-  color:
-    #64748b;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.03);
+
+  color: #94A3B8;
+
+  font-size: 24px;
+
+  line-height: 1;
+
+  cursor: pointer;
 
   transition:
+    background 160ms ease,
     border-color 160ms ease,
-    color 160ms ease,
-    background 160ms ease;
-}
-
-.intelligence-close:hover {
-  border-color:
-    rgba(56, 189, 248, 0.5);
-
-  background:
-    rgba(56, 189, 248, 0.07);
-
-  color:
-    #f8fafc;
+    color 160ms ease;
 }
 
 
-/* DIVIDER */
+.project-info-close:hover {
+  border-color: rgba(56, 189, 248, 0.45);
 
-.intelligence-divider {
+  background: rgba(56, 189, 248, 0.08);
+
+  color: #F8FAFC;
+}
+
+
+.project-info-divider {
   height: 1px;
 
-  margin:
-    0
-    26px;
+  margin: 0 28px;
 
-  background:
-    #1f2937;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 
-/* DESCRIPTION */
+.project-info-details {
+  display: flex;
 
-.intelligence-description {
-  padding:
-    22px
-    26px
-    10px;
+  flex-direction: column;
+
+  padding: 8px 28px 10px;
 }
 
-.intelligence-section-label {
-  color:
-    #64748b;
+
+.project-info-row {
+  display: grid;
+
+  grid-template-columns: 160px 1fr;
+
+  gap: 24px;
+
+  padding: 17px 0;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+
+.project-info-row:last-child {
+  border-bottom: 0;
+}
+
+
+.project-info-row span {
+  color: #64748B;
+
+  font-size: 9px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.16em;
+
+  text-transform: uppercase;
+}
+
+
+.project-info-row strong {
+  color: #E2E8F0;
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  line-height: 1.55;
+}
+
+
+.project-info-footer {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin: 0 28px;
+
+  padding: 18px 0 22px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+
+.project-info-footer span {
+  color: #475569;
 
   font-size: 8px;
 
+  font-weight: 600;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+}
+
+
+.project-info-footer button {
+  border: 1px solid rgba(56, 189, 248, 0.25);
+
+  border-radius: 8px;
+
+  background: rgba(56, 189, 248, 0.06);
+
+  padding: 8px 13px;
+
+  color: #38BDF8;
+
+  font-size: 9px;
+
   font-weight: 700;
+
+  letter-spacing: 0.14em;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+
+.project-info-footer button:hover {
+  border-color: rgba(56, 189, 248, 0.55);
+
+  background: rgba(56, 189, 248, 0.12);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 640px) {
+
+  .project-info-overlay {
+    padding: 14px;
+  }
+
+
+  .project-info-header {
+    padding: 22px 20px 18px;
+  }
+
+
+  .project-info-header h2 {
+    font-size: 21px;
+  }
+
+
+  .project-info-divider {
+    margin: 0 20px;
+  }
+
+
+  .project-info-details {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+
+  .project-info-row {
+    grid-template-columns: 1fr;
+
+    gap: 6px;
+
+    padding: 14px 0;
+  }
+
+
+  .project-info-footer {
+    margin-left: 20px;
+    margin-right: 20px;
+
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+}
+/* =========================================================
+   REFERENCE DASHBOARD FIXES
+   ONLY affects the requested panels
+   ========================================================= */
+
+
+/* =========================================================
+   01 · MARGIN
+   ========================================================= */
+
+.margin-panel {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-height: 350px;
+
+  overflow: hidden;
+
+  padding: 20px;
+
+  border: 1px solid #1F2937;
+  border-radius: 12px;
+
+  background: #0B1117;
+
+  color: #F8FAFC;
+
+  text-align: left;
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.margin-panel:hover {
+  border-color: rgba(56, 189, 248, 0.5);
+  background: #0D141C;
+}
+
+
+.margin-panel-accent {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 1px;
+
+  background: rgba(56, 189, 248, 0.65);
+}
+
+
+.margin-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+
+.margin-panel-kicker {
+  color: #38BDF8 !important;
+
+  font-size: 11px;
+  font-weight: 600;
 
   letter-spacing: 0.18em;
 
   text-transform: uppercase;
 }
 
-.intelligence-description p {
-  margin:
-    9px
-    0
-    0;
 
-  color:
-    #cbd5e1;
+.margin-panel-title {
+  margin-top: 7px;
+
+  color: #F8FAFC !important;
+
+  font-size: 17px;
+  font-weight: 600;
+}
+
+
+.margin-panel-intelligence {
+  margin-top: 5px;
+
+  color: #64748B !important;
 
   font-size: 11px;
-
-  line-height: 1.75;
 }
 
 
-/* SECTION */
+.margin-panel-divider {
+  height: 1px;
 
-.intelligence-section {
-  padding:
-    18px
-    26px;
+  margin-top: 16px;
+  margin-bottom: 4px;
+
+  background: #1F2937;
 }
 
 
-/* STAT LIST */
-
-.intelligence-stats {
-  margin-top: 10px;
-
+.margin-rows {
   display: flex;
 
-  flex-direction: column;
-
-  gap: 7px;
-}
-
-
-/* INDIVIDUAL STAT */
-
-.intelligence-stat {
-  min-height: 52px;
-
-  display: flex;
-
-  align-items: center;
-
-  border:
-    1px solid
-    #1f2937;
-
-  border-radius: 7px;
-
-  background:
-    rgba(11, 17, 23, 0.85);
-
-  overflow: hidden;
-
-  transition:
-    border-color 160ms ease,
-    background 160ms ease;
-}
-
-.intelligence-stat:hover {
-  border-color:
-    rgba(56, 189, 248, 0.28);
-
-  background:
-    rgba(14, 25, 34, 0.95);
-}
-
-
-/* NUMBER */
-
-.intelligence-stat-index {
-  width: 46px;
-
-  align-self: stretch;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  border-right:
-    1px solid
-    #1f2937;
-
-  color:
-    #38bdf8;
-
-  font-size: 8px;
-
-  font-weight: 700;
-
-  letter-spacing: 0.08em;
-}
-
-
-/* STAT CONTENT */
-
-.intelligence-stat-content {
   flex: 1;
 
-  min-width: 0;
+  flex-direction: column;
+}
 
-  padding:
-    9px
-    12px;
 
-  display: flex;
+.margin-row {
+  display: grid;
+
+  grid-template-columns: 38px minmax(0, 1fr) auto;
 
   align-items: center;
 
-  justify-content: space-between;
+  min-height: 56px;
 
-  gap: 12px;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.75);
+
+  column-gap: 12px;
 }
 
-.intelligence-stat-content span {
-  color:
-    #94a3b8;
 
-  font-size: 10px;
-
-  line-height: 1.4;
+.margin-row:last-child {
+  border-bottom: none;
 }
 
-.intelligence-stat-content strong {
-  color:
-    #f8fafc;
+
+.margin-number {
+  display: flex;
+
+  align-items: center;
+  justify-content: flex-start;
+
+  color: #38BDF8 !important;
 
   font-size: 10px;
-
   font-weight: 600;
-
-  text-align: right;
 }
 
 
-/* MANAGEMENT QUESTION */
+.margin-label {
+  min-width: 0;
 
-.management-question {
-  margin:
-    8px
-    26px
-    22px;
-
-  padding:
-    16px;
-
-  border:
-    1px solid
-    rgba(56, 189, 248, 0.18);
-
-  border-radius: 8px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(56, 189, 248, 0.07),
-      rgba(56, 189, 248, 0.025)
-    );
-}
-
-.management-question
-.intelligence-section-label {
-  color:
-    #38bdf8;
-}
-
-.management-question h3 {
-  margin:
-    9px
-    0
-    0;
-
-  color:
-    #f8fafc;
+  color: #CBD5E1 !important;
 
   font-size: 13px;
+  font-weight: 500;
 
-  font-weight: 600;
-
-  line-height: 1.45;
+  white-space: nowrap;
 }
 
-.management-question p {
-  margin:
-    7px
-    0
-    0;
 
-  color:
-    #64748b;
+.margin-value {
+  min-width: 105px;
+
+  text-align: right;
+
+  font-size: 14px;
+  font-weight: 650;
+
+  white-space: nowrap;
+}
+
+
+.margin-footer {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding-top: 13px;
+
+  border-top: 1px solid #1F2937;
 
   font-size: 9px;
 
-  line-height: 1.7;
+  text-transform: uppercase;
+
+  letter-spacing: 0.15em;
 }
 
 
-/* FOOTER */
+.margin-footer span:first-child {
+  color: #475569;
+}
 
-.intelligence-footer {
-  margin:
-    0
-    26px
-    26px;
 
-  padding-top:
-    16px;
+.margin-footer span:last-child {
+  color: #38BDF8;
+}
+
+
+/* =========================================================
+   04 · DRIVER RISK
+   ========================================================= */
+
+.driver-risk-panel {
+  position: relative;
 
   display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-height: 350px;
+
+  overflow: hidden;
+
+  padding: 20px;
+
+  border: 1px solid #1F2937;
+  border-radius: 12px;
+
+  background: #0B1117;
+
+  color: #F8FAFC;
+
+  text-align: left;
+
+  transition:
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+
+.driver-risk-panel:hover {
+  border-color: rgba(56, 189, 248, 0.5);
+
+  background: #0D141C;
+}
+
+
+.driver-risk-accent {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 1px;
+
+  background: rgba(56, 189, 248, 0.65);
+}
+
+
+.driver-risk-header {
+  display: flex;
+
+  align-items: flex-start;
+}
+
+
+.driver-risk-kicker {
+  color: #38BDF8 !important;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.18em;
+
+  text-transform: uppercase;
+}
+
+
+.driver-risk-title {
+  margin-top: 7px;
+
+  color: #F8FAFC !important;
+
+  font-size: 17px;
+  font-weight: 600;
+}
+
+
+.driver-risk-intelligence {
+  margin-top: 5px;
+
+  color: #64748B !important;
+
+  font-size: 11px;
+}
+
+
+.driver-risk-description {
+  margin-top: 16px;
+
+  padding: 11px 12px;
+
+  border: 1px solid #1F2937;
+
+  border-radius: 8px;
+
+  background: rgba(3, 7, 18, 0.6);
+}
+
+
+.driver-risk-subtitle {
+  color: #38BDF8 !important;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  letter-spacing: 0.15em;
+
+  text-transform: uppercase;
+}
+
+
+.driver-risk-description p {
+  margin: 5px 0 0;
+
+  color: #94A3B8 !important;
+
+  font-size: 10px;
+
+  line-height: 1.55;
+}
+
+
+.driver-risk-table-header {
+  display: grid;
+
+  grid-template-columns:
+    32px
+    minmax(100px, 1fr)
+    65px
+    minmax(150px, 1.2fr);
 
   align-items: center;
 
   gap: 8px;
 
-  border-top:
-    1px solid
-    #1f2937;
+  margin-top: 15px;
 
-  color:
-    #475569;
+  padding-bottom: 7px;
 
-  font-size: 8px;
+  border-bottom: 1px solid #1F2937;
 
-  line-height: 1.5;
-
-  letter-spacing: 0.04em;
-}
-
-.footer-pulse {
-  width: 6px;
-  height: 6px;
-
-  flex-shrink: 0;
-
-  border-radius: 50%;
-
-  background:
-    #38bdf8;
-
-  box-shadow:
-    0 0 9px
-    rgba(56, 189, 248, 0.7);
-}
-
-
-/* PANEL SCROLLBAR */
-
-.intelligence-panel::-webkit-scrollbar {
-  width: 6px;
-}
-
-.intelligence-panel::-webkit-scrollbar-track {
-  background:
-    #030712;
-}
-
-.intelligence-panel::-webkit-scrollbar-thumb {
-  background:
-    #1f2937;
-
-  border-radius:
-    999px;
-}
-/* =========================================================
-   PROJECT INFORMATION MODAL
-========================================================= */
-
-.project-info-backdrop {
-  position: fixed;
-
-  inset: 0;
-
-  z-index: 200;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 20px;
-
-  background:
-    rgba(1, 4, 9, 0.78);
-
-  backdrop-filter:
-    blur(9px);
-}
-
-
-.project-info-modal {
-  width: min(
-    520px,
-    100%
-  );
-
-  overflow: hidden;
-
-  border:
-    1px solid
-    rgba(56, 189, 248, 0.18);
-
-  border-radius: 10px;
-
-  background:
-    linear-gradient(
-      150deg,
-      #0b1117,
-      #071019
-    );
-
-  box-shadow:
-    0 30px 90px
-    rgba(0, 0, 0, 0.55);
-}
-
-
-/* HEADER */
-
-.project-info-header {
-  min-height: 90px;
-
-  padding:
-    22px
-    24px;
-
-  display: flex;
-
-  align-items: flex-start;
-
-  justify-content: space-between;
-
-  gap: 18px;
-
-  border-bottom:
-    1px solid
-    #1f2937;
-}
-
-.project-info-kicker {
-  color:
-    #38bdf8;
+  color: #64748B !important;
 
   font-size: 8px;
 
-  font-weight: 700;
+  text-transform: uppercase;
 
-  letter-spacing: 0.2em;
-}
-
-.project-info-header h2 {
-  margin:
-    7px
-    0
-    0;
-
-  color:
-    #f8fafc;
-
-  font-size: 20px;
-
-  font-weight: 650;
-
-  letter-spacing: -0.025em;
+  letter-spacing: 0.08em;
 }
 
 
-/* CLOSE */
+.driver-risk-table-header span:last-child {
+  text-align: right;
+}
 
-.project-info-close {
-  width: 34px;
-  height: 34px;
 
-  flex-shrink: 0;
-
+.driver-risk-table {
   display: flex;
 
-  align-items: center;
-  justify-content: center;
-
-  border:
-    1px solid
-    #1f2937;
-
-  border-radius: 7px;
-
-  background:
-    #0b1117;
-
-  color:
-    #64748b;
-}
-
-.project-info-close:hover {
-  border-color:
-    rgba(56, 189, 248, 0.5);
-
-  background:
-    rgba(56, 189, 248, 0.07);
-
-  color:
-    #ffffff;
-}
-
-
-/* CONTENT */
-
-.project-info-content {
-  padding:
-    18px
-    24px;
-
-  display: flex;
+  flex: 1;
 
   flex-direction: column;
-
-  gap: 7px;
 }
 
-.project-info-row {
-  min-height: 52px;
 
-  padding:
-    10px
-    12px;
+.driver-risk-row {
+  display: grid;
 
-  display: flex;
+  grid-template-columns:
+    32px
+    minmax(100px, 1fr)
+    65px
+    minmax(150px, 1.2fr);
 
   align-items: center;
 
-  justify-content: space-between;
+  gap: 8px;
 
-  gap: 20px;
+  min-height: 34px;
 
-  border:
-    1px solid
-    #1f2937;
-
-  border-radius: 7px;
-
-  background:
-    rgba(3, 7, 18, 0.55);
+  border-bottom: 1px solid rgba(31, 41, 55, 0.7);
 }
 
-.project-info-row span {
-  color:
-    #64748b;
 
-  font-size: 8px;
+.driver-risk-number {
+  color: #38BDF8 !important;
 
-  font-weight: 700;
+  font-size: 9px;
 
-  letter-spacing: 0.14em;
+  font-weight: 600;
 }
 
-.project-info-row strong {
-  max-width: 65%;
 
-  color:
-    #cbd5e1;
+.driver-risk-name {
+  color: #CBD5E1 !important;
+
+  font-size: 11px;
+
+  font-weight: 500;
+}
+
+
+.driver-risk-stress {
+  color: #38BDF8 !important;
 
   font-size: 10px;
 
   font-weight: 500;
+}
+
+
+.driver-risk-impact {
+  display: flex;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+
+.driver-impact-positive,
+.driver-impact-negative {
+  min-width: 67px;
 
   text-align: right;
 
-  line-height: 1.5;
-}
+  font-size: 10px;
 
-.project-info-status {
-  border-color:
-    rgba(56, 189, 248, 0.16);
+  font-weight: 600;
 
-  background:
-    rgba(56, 189, 248, 0.045);
-}
-
-.project-info-status strong {
-  color:
-    #34d399;
+  white-space: nowrap;
 }
 
 
-/* FOOTER */
+.driver-impact-positive {
+  color: #818CF8 !important;
+}
 
-.project-info-footer {
-  padding:
-    17px
-    24px
-    20px;
 
-  border-top:
-    1px solid
-    #1f2937;
+.driver-impact-negative {
+  color: #FB7185 !important;
+}
 
-  color:
-    #475569;
 
-  font-size: 8px;
+.driver-risk-bar-track {
+  display: block;
 
-  line-height: 1.9;
+  width: 78px;
+  height: 8px;
 
-  letter-spacing: 0.08em;
+  overflow: hidden;
+
+  border-radius: 2px;
+
+  background: rgba(255, 255, 255, 0.035);
+}
+
+
+.driver-risk-bar-positive,
+.driver-risk-bar-negative {
+  display: block;
+
+  height: 100%;
+
+  border-radius: 2px;
+}
+
+
+.driver-risk-bar-positive {
+  background: #818CF8;
+}
+
+
+.driver-risk-bar-negative {
+  background: #EF4444;
+}
+
+
+/* =========================================================
+   GRAPH TITLES
+   ========================================================= */
+
+.chart-section-kicker {
+  color: #38BDF8 !important;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.18em;
 
   text-transform: uppercase;
 }
 
-.project-info-accent {
-  color:
-    rgba(56, 189, 248, 0.65);
+
+.chart-section-title {
+  margin-top: 5px;
+
+  color: #38BDF8 !important;
+
+  font-size: 15px;
+
+  font-weight: 600;
+}
+
+
+.chart-intelligence {
+  color: #64748B !important;
+
+  font-size: 9px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.12em;
+}
+
+
+/* =========================================================
+   DRIVER WATCH
+   ========================================================= */
+
+.driver-list {
+  display: flex !important;
+
+  flex-direction: column !important;
+
+  width: 100% !important;
+
+  margin-top: 10px !important;
+}
+
+
+.driver-list > div {
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(82px, 92px) !important;
+
+  align-items: center !important;
+
+  width: 100% !important;
+
+  min-height: 34px !important;
+
+  gap: 12px !important;
+
+  padding: 6px 0 !important;
+
+  border-bottom: 1px solid rgba(31, 41, 55, 0.65) !important;
+}
+
+
+.driver-list > div:last-child {
+  border-bottom: none !important;
+}
+
+
+.driver-list > div > span:first-child {
+  min-width: 0 !important;
+
+  overflow: hidden !important;
+
+  color: #CBD5E1 !important;
+
+  font-size: 11px !important;
+
+  font-weight: 500 !important;
+
+  white-space: nowrap !important;
+
+  text-overflow: ellipsis !important;
+}
+
+
+.driver-list > div > span:last-child {
+  width: 92px !important;
+
+  min-width: 92px !important;
+
+  overflow: hidden !important;
+
+  color: #38BDF8 !important;
+
+  font-size: 9px !important;
+
+  font-weight: 600 !important;
+
+  text-align: right !important;
+
+  white-space: nowrap !important;
+
+  text-overflow: ellipsis !important;
+}
+
+
+.driver-list .driver-positive {
+  color: #34D399 !important;
+}
+
+
+.driver-list .driver-negative {
+  color: #FB7185 !important;
+}
+
+
+.driver-list .driver-warning {
+  color: #FBBF24 !important;
 }
 </file>
 

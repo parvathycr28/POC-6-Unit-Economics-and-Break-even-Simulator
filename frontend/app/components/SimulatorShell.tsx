@@ -679,7 +679,7 @@ export default function SimulatorShell({
                 </span>
 
                 <strong>
-                  Batch 2 Interns
+                  8,MA College
                 </strong>
 
               </div>

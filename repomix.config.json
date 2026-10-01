@@ -1,0 +1,23 @@
+{
+  "input": {
+    "include": [
+      "frontend/app/**/*.tsx",
+      "frontend/app/**/*.ts",
+      "frontend/app/**/*.css",
+      "frontend/lib/**/*.ts",
+      "frontend/package.json"
+    ],
+    "exclude": [
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/.git/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/coverage/**"
+    ]
+  },
+  "output": {
+    "filePath": "repomix-output.txt",
+    "style": "plain"
+  }
+}

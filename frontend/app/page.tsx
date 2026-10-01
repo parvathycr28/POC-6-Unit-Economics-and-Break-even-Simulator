@@ -120,7 +120,7 @@ export default function Home() {
                 </span>
 
                 <strong>
-                  Batch 2 Interns
+                  8 MA College
                 </strong>
 
               </div>
